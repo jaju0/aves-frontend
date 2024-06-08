@@ -2,6 +2,7 @@ import { useLayoutEffect, useMemo } from "react";
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-query";
 import { LoginPage } from "./pages/LoginPage";
+import { ProtectedAreaLayout } from "./pages/ProtectedAreaLayout";
 export function App()
 {
 
@@ -19,6 +20,8 @@ export function App()
         createBrowserRouter(
             createRoutesFromElements(
                 <Route path="/">
+                    <Route element={<ProtectedAreaLayout />}>
+                    </Route>
                     <Route path="/login" element={<LoginPage />} />
                 </Route>
             )
