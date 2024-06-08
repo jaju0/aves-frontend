@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-q
 import { LoginPage } from "./pages/LoginPage";
 import { refreshJwtTokenMutation } from "./queries";
 import { ProtectedAreaLayout } from "./pages/ProtectedAreaLayout";
+import { AccountPage } from "./pages/AccountPage";
+import { accountPageLoader } from "./pages/AccountPage/loader";
 export function App()
 {
 
@@ -23,6 +25,7 @@ export function App()
             createRoutesFromElements(
                 <Route path="/">
                     <Route element={<ProtectedAreaLayout />}>
+                        <Route path="/account" loader={accountPageLoader.bind(null, queryClient)} element={<AccountPage />} />
                     </Route>
                     <Route path="/login" element={<LoginPage />} />
                 </Route>
