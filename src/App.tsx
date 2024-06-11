@@ -7,6 +7,9 @@ import { refreshJwtTokenMutation } from "./queries";
 import { ProtectedAreaLayout } from "./pages/ProtectedAreaLayout";
 import { AccountPage } from "./pages/AccountPage";
 import { accountPageLoader } from "./pages/AccountPage/loader";
+import { UsersPage } from "./pages/UsersPage";
+import { usersPageLoader } from "./pages/UsersPage/loader";
+
 export function App()
 {
 
@@ -26,6 +29,7 @@ export function App()
                 <Route path="/">
                     <Route element={<ProtectedAreaLayout />}>
                         <Route path="/account" loader={accountPageLoader.bind(null, queryClient)} element={<AccountPage />} />
+                        <Route path="/users" loader={usersPageLoader.bind(null, queryClient)} element={<UsersPage />} />
                     </Route>
                     <Route path="/login" element={<LoginPage />} />
                 </Route>
