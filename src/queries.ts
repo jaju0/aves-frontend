@@ -1,12 +1,22 @@
 import axios, { AxiosError } from "axios";
 import { useJwtData } from "./hooks/useJwtData";
 
+export const userRank = ["ADMIN", "USER", "NONE"];
+export type UserRank = typeof userRank[number];
+
 export interface Credential
 {
     key: string;
     secret: string;
     demoTrading: boolean;
     isActive: boolean;
+}
+
+export interface UserData
+{
+    email: string;
+    id: string;
+    rank: UserRank;
 }
 
 export interface CredentialsSubmitionRequestBody
@@ -36,12 +46,8 @@ export interface CredentialsResponse
     active_credential: Credential;
 }
 
-export interface UserDataResponse
-{
-    email: string;
-    id: string;
-    rank: string;
-}
+export type UserDataResponse = UserData;
+export type UserListResponse = UserData[];
 
 const apiUrl = "http://localhost:4000/v1";
 
