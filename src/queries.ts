@@ -34,6 +34,18 @@ export interface CredentialsDeletionRequestBody
     key: string;
 }
 
+export interface UserCreationRequestBody
+{
+    email: string;
+    rank: string;
+}
+
+export interface UserAmendmentRequestBody
+{
+    email: string;
+    rank: string;
+}
+
 export interface SuccessfulLoginResponse
 {
     accessToken: string;
@@ -186,4 +198,60 @@ export const userDataQuery = {
     }
 }
 
-// TODO: take a look in axios interceptors
+export const usersListQuery = {
+    gcTime: 0,
+    queryKey: ["user", "list"],
+    queryFn: async () => {
+        try
+        {
+            const response = await service.get<UserListResponse>("/user/list");
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const userCreationMutation = {
+    mutationFn: async (body: UserCreationRequestBody) => {
+        try
+        {
+            const response = await service.post<UserData>("/user/create", body);
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const userAmendmentMutation = {
+    mutationFn: async (body: UserAmendmentRequestBody) => {
+        try
+        {
+            const response = await service.post<UserData>("/user/amend", body);
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const userDeletionMutation = {
+    mutationFn: async (email: string) => {
+        try
+        {
+            const response = await service.post("/user/delete", { email });
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
