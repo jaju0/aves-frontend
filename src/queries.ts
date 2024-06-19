@@ -68,22 +68,26 @@ const service = axios.create({
     withCredentials: true,
 });
 
+let refreshTokenPending = false;
 service.interceptors.request.use(async (config) => {
+    if(refreshTokenPending)
+        return config;
+
+    refreshTokenPending = true;
+
     let jwtData = useJwtData();
     if(!jwtData)
         return config;
 
-    /*
-    // TODO: fix code (if running; it freezes the browser for unknown reason)
     if(Date.now() >= jwtData.expirationTimestamp)
     {
         const response = await service.post<SuccessfulLoginResponse>("/auth/refresh");
         jwtData = response.data;
         localStorage.setItem("jwt", JSON.stringify(jwtData));
     }
-    */
 
     config.headers["Authorization"] = "bearer " + jwtData.accessToken;
+    refreshTokenPending = false;
     return config;
 });
 
