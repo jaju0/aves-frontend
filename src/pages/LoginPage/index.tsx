@@ -23,6 +23,7 @@ export function LoginPage()
 
             localStorage.setItem("jwt", JSON.stringify(jwtData));
             navigate("/chart");
+            location.reload();
         });
     }, [idToken]);
 
