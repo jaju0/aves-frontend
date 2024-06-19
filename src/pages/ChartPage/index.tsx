@@ -1,5 +1,7 @@
 import { KlineIntervalV3 } from "bybit-api";
 import { createContext, useEffect, useState } from "react";
+import { PairSearchForm } from "../../components/PairSearchForm";
+import { SpreadChartWithControl } from "../../components/SpreadChartWithControl";
 
 export interface SymbolPair
 {
@@ -24,7 +26,9 @@ export function ChartPage()
             <div className="h-full">
                 <div className="h-full grid grid-rows-12 grid-cols-4 gap-1 px-5">
                     <div className="row-span-1 col-span-4">
+                        <PairSearchForm />
                     </div>
+                    <SpreadChartWithControl />
                 </div>
             </div>
         </SymbolPairContext.Provider>
