@@ -5,6 +5,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-query";
 import { LoginPage } from "./pages/LoginPage";
 import { refreshJwtTokenMutation } from "./queries";
+import { ChartPage } from "./pages/ChartPage";
 import { ProtectedAreaLayout } from "./pages/ProtectedAreaLayout";
 import { AccountPage } from "./pages/AccountPage";
 import { accountPageLoader } from "./pages/AccountPage/loader";
@@ -47,6 +48,7 @@ export function App()
             createRoutesFromElements(
                 <Route path="/">
                     <Route element={<ProtectedAreaLayout />}>
+                        <Route path="/chart" element={<ChartPage />} />
                         <Route path="/account" loader={accountPageLoader.bind(null, queryClient)} element={<AccountPage />} />
                         <Route path="/users" loader={usersPageLoader.bind(null, queryClient)} element={<UsersPage />} />
                     </Route>
@@ -70,9 +72,9 @@ export function App()
     return (
         <QueryClientProvider client={queryClient}>
             <BybitConnectorsContext.Provider value={bybitConnectors}>
-            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID}>
-                <RouterProvider router={router} />
-            </GoogleOAuthProvider>
+                <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID}>
+                    <RouterProvider router={router} />
+                </GoogleOAuthProvider>
             </BybitConnectorsContext.Provider>
         </QueryClientProvider>
     );
