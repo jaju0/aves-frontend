@@ -3,6 +3,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ISeriesApi, LineData, Time, WhitespaceData } from "lightweight-charts";
 import { SpreadDataFeed, SpreadDataStatistics } from "../../SpreadDataFeed";
 import { BybitConnectorsContext } from "../../App";
+import { OrderSubmitionForm } from "../OrderSubmitionForm";
+import { SpreadChart } from "../SpreadChart";
 import { WSDataFeed } from "../../WSDataFeed";
 import { SymbolPairContext } from "../../pages/ChartPage";
 
@@ -54,8 +56,10 @@ export function SpreadChartWithControl()
             <WSDataFeedContext.Provider value={wsDataFeed}>
                 <ChartDataContext.Provider value={[chartData, setChartData]}>
                     <div className="row-span-11 col-span-3">
+                        <SpreadChart residualsLineSeriesRef={residualsLineSeriesRef} />
                     </div>
                     <div className="row-span-11">
+                        <OrderSubmitionForm />
                     </div>
                 </ChartDataContext.Provider>
             </WSDataFeedContext.Provider>
