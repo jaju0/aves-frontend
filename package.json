@@ -13,6 +13,7 @@
     "@react-oauth/google": "^0.12.1",
     "@tanstack/react-query": "^5.37.1",
     "axios": "^1.7.2",
+    "bybit-api": "^3.10.5",
     "formik": "^2.4.6",
     "js-cookie": "^3.0.5",
     "react": "^18.2.0",

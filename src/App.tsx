@@ -1,4 +1,5 @@
-import { useLayoutEffect, useMemo } from "react";
+import { RestClientV5, WebsocketClient } from "bybit-api";
+import { createContext, useLayoutEffect, useMemo } from "react";
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-query";
@@ -10,9 +11,16 @@ import { accountPageLoader } from "./pages/AccountPage/loader";
 import { UsersPage } from "./pages/UsersPage";
 import { usersPageLoader } from "./pages/UsersPage/loader";
 
+export interface BybitConnectors
+{
+    restClient: RestClientV5;
+    wsClient: WebsocketClient;
+}
+
+export const BybitConnectorsContext = createContext<BybitConnectors>({} as BybitConnectors);
+
 export function App()
 {
-
     const queryClient = useMemo(() => (
         new QueryClient({
             defaultOptions: {
@@ -22,6 +30,17 @@ export function App()
             }
         })
     ), []);
+
+    const bybitConnectors = {
+        restClient: useMemo(() => {
+            return new RestClientV5();
+        }, []),
+        wsClient: useMemo(() => {
+            return new WebsocketClient({
+                market: "v5",
+            });
+        }, []),
+    };
 
     const router = useMemo(() => (
         createBrowserRouter(
@@ -50,9 +69,11 @@ export function App()
 
     return (
         <QueryClientProvider client={queryClient}>
+            <BybitConnectorsContext.Provider value={bybitConnectors}>
             <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID}>
                 <RouterProvider router={router} />
             </GoogleOAuthProvider>
+            </BybitConnectorsContext.Provider>
         </QueryClientProvider>
     );
 }
