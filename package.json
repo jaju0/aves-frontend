@@ -15,6 +15,7 @@
     "axios": "^1.7.2",
     "bybit-api": "^3.10.5",
     "events": "^3.3.0",
+    "fancy-canvas": "^2.1.0",
     "formik": "^2.4.6",
     "js-cookie": "^3.0.5",
     "lightweight-charts": "^4.1.5",
@@ -25,10 +26,10 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-"@types/events": "^3.0.3",
+    "@types/events": "^3.0.3",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20.14.2",
-    "@types/react": "^18.2.66",
+    "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
