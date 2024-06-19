@@ -2,8 +2,17 @@ import axios, { AxiosError } from "axios";
 import { APIResponseV3WithTime, CategorySymbolListV5, InstrumentInfoResponseV5, KlineIntervalV3, OHLCVKlineV5, RestClientV5 } from "bybit-api";
 import { useJwtData } from "./hooks/useJwtData";
 
-export const userRank = ["ADMIN", "USER", "NONE"];
+export const userRank = ["ADMIN", "USER", "NONE"] as const;
 export type UserRank = typeof userRank[number];
+
+export const orderType = ["Market", "Limit", "Stop"] as const;
+export type OrderType = typeof orderType[number];
+
+export const orderSide = ["Buy", "Sell"] as const;
+export type OrderSide = typeof orderSide[number];
+
+export const positionSide = ["None", "Long", "Short"] as const;
+export type PositionSide = typeof positionSide[number];
 
 export interface Credential
 {
@@ -47,6 +56,37 @@ export interface UserAmendmentRequestBody
     rank: string;
 }
 
+export interface OrderSubmitionRequestBody
+{
+    type: OrderType;
+    side: OrderSide;
+    symbol1: string;
+    symbol2: string;
+    regressionSlope: number;
+    entryResidual?: number;
+    takeProfit?: number;
+    stopLoss?: number;
+    quoteQty?: number;
+    baseQty?: number;
+}
+
+export interface OrderAmendmentRequestBody
+{
+    orderId: string;
+    entryResidual: number;
+}
+
+export interface OrderCancelationRequestBody
+{
+    orderId: string;
+}
+
+export interface PositionLiquidationRequestBody
+{
+    symbol1: string;
+    symbol2: string;
+}
+
 export interface SuccessfulLoginResponse
 {
     accessToken: string;
@@ -61,6 +101,42 @@ export interface CredentialsResponse
 
 export type UserDataResponse = UserData;
 export type UserListResponse = UserData[];
+
+export interface OrderData
+{
+    id: string;
+    ownerId: string;
+    status: string;
+    type: OrderType;
+    side: OrderSide;
+    symbol1: string;
+    symbol2: string;
+    symbol1BaseQty: string;
+    symbol2BaseQty: string;
+    quoteQty?: string;
+    entryResidual?: string;
+    regressionSlope: string;
+    takeProfit?: string;
+    stopLoss?: string;
+}
+
+export interface PositionData
+{
+    id: string;
+    ownerId: string;
+    side: PositionSide;
+    symbol1: string;
+    symbol2: string;
+    symbol1EntryPrice: string;
+    symbol2EntryPrice: string;
+    symbol1BaseQty: string;
+    symbol2BaseQty: string;
+    lastPnl: string;
+    regressionSlope: string;
+    takeProfit?: string;
+    stopLoss?: string;
+    open: boolean;
+}
 
 const apiUrl = "http://localhost:4000/v1";
 
@@ -260,6 +336,97 @@ export const userDeletionMutation = {
         }
     }
 }
+
+export const orderListQuery = {
+    gcTime: 0,
+    queryKey: ["order", "list"],
+    queryFn: async () => {
+        try
+        {
+            const response = await service.get<OrderData[]>("/order/list");
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const orderSubmitionMutation = {
+    mutationFn: async (body: OrderSubmitionRequestBody) => {
+        try
+        {
+            const response = await service.post("/order/submit", body);
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const orderAmendmentMutation = {
+    mutationFn: async (body: OrderAmendmentRequestBody) => {
+        try
+        {
+            const response = await service.post("/order/amend", body);
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const orderCancelationMutation = {
+    mutationFn: async (body: OrderCancelationRequestBody) => {
+        try
+        {
+            const response = await service.post("/order/cancel", body);
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const positionListQuery = {
+    gcTime: 0,
+    queryKey: ["position", "list"],
+    queryFn: async () => {
+        try
+        {
+            const response = await service.get<PositionData[]>("/position/list");
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const positionLiquidationMutation = {
+    mutationFn: async (body: PositionLiquidationRequestBody) => {
+        try
+        {
+            const response = await service.post("/position/liquidate", body);
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+
+
 export const bybitInstrumentInfoQuery = (bybitRestClient: RestClientV5) => ({
     staleTime: Infinity,
     queryKey: ["bybit", "instrumentInfo"],
