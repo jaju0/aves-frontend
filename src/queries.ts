@@ -68,7 +68,7 @@ export interface OrderSubmitionRequestBody
     takeProfit?: number;
     stopLoss?: number;
     quoteQty?: number;
-    baseQty?: number;
+    baseQty?: { symbol1BaseQty: number; symbol2BaseQty: number };
 }
 
 export interface OrderAmendmentRequestBody

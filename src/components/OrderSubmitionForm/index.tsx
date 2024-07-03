@@ -12,6 +12,7 @@ export interface OrderSubmitionFormData
     side: "Buy" | "Sell";
     hedgeRatio: string;
     qty: string;
+    symbol2Qty: string;
     entry: string;
     takeProfit: string;
     stopLoss: string;
@@ -31,16 +32,22 @@ export function OrderSubmitionForm()
             side: "Buy",
             hedgeRatio: "",
             qty: "",
+            symbol2Qty: "",
             entry: "",
             takeProfit: "",
             stopLoss: "",
             qtyType: "QuoteQty",
         },
         validationSchema: Yup.object({
-            type: Yup.string().oneOf(["Market", "Limit", "Stop"]).required("Mandatory Field"),
-            side: Yup.string().oneOf(["Buy", "Sell"]).required("Mandatory Field"),
-            hedgeRatio: Yup.number().required("Mandatory Field"),
-            qty: Yup.number().required("Mandatory Field"),
+            type: Yup.string().oneOf(["Market", "Limit", "Stop"]).required(),
+            side: Yup.string().oneOf(["Buy", "Sell"]).required(),
+            hedgeRatio: Yup.number().required(),
+            qty: Yup.number().required(),
+            symbol2Qty: Yup.number().when("qtyType", {
+                is: (val: string) => val === "BaseQty",
+                then: schema => schema.required(),
+                otherwise: schema => schema.optional(),
+            }),
             entry: Yup.number().when("type", {
                 is: (val: string) => val === "Limit" || val === "Stop",
                 then: schema => schema.required(),
@@ -48,7 +55,7 @@ export function OrderSubmitionForm()
             }),
             takeProfit: Yup.number().optional(),
             stopLoss: Yup.number().optional(),
-            qtyType: Yup.string().oneOf(["QuoteQty", "BaseQty"]).required("Mandatory Field"),
+            qtyType: Yup.string().oneOf(["QuoteQty", "BaseQty"]).required(),
         }),
         onSubmit: values => {
             if(chartData?.statistics === undefined)
@@ -82,7 +89,10 @@ export function OrderSubmitionForm()
                 regressionSlope: values.hedgeRatio === "" ? chartData.statistics.hedgeRatio : +values.hedgeRatio,
                 symbol1EntryPrice: symbol1Price,
                 symbol2EntryPrice: symbol1Price === undefined ? undefined : symbol2LatestPrice,
-                baseQty: values.qtyType === "BaseQty" ? +values.qty : undefined,
+                baseQty: values.qtyType === "BaseQty" ? {
+                    symbol1BaseQty: +values.qty,
+                    symbol2BaseQty: +values.symbol2Qty,
+                } : undefined,
                 quoteQty: values.qtyType === "QuoteQty" ? +values.qty : undefined,
                 stopLoss: stopLoss,
                 takeProfit: takeProfit,
@@ -118,7 +128,7 @@ export function OrderSubmitionForm()
                     {...formik.getFieldProps("qtyType")}
                 >
                     <option className="bg-zinc-950" value="QuoteQty">Quote Asset Quantity</option>
-                    <option className="bg-zinc-950" value="BaseQty">Base Asset Quantity (Symbol 1)</option>
+                    <option className="bg-zinc-950" value="BaseQty">Base Asset Quantity</option>
                 </select>
                 <div className="col-span-12">
                     <input
@@ -137,7 +147,7 @@ export function OrderSubmitionForm()
                 <div className="col-span-12">
                     <input
                         type="number"
-                        placeholder="Quantity"
+                        placeholder={formik.values.qtyType === "QuoteQty" ? "Quantity" : "Symbol 1 Quantity"}
                         className={
                             `col-span-11 block w-full bg-zinc-800 px-4 py-2 focus:outline-0 ` +
                             `${formik.touched.qty && formik.errors.qty ? "border border-1 border-red-500" : ""}`
@@ -148,6 +158,22 @@ export function OrderSubmitionForm()
                         <span className="text-red-500">* {formik.errors.qty}</span>
                     }
                 </div>
+                { formik.values.qtyType === "BaseQty" &&
+                    <div className="col-span-12">
+                        <input
+                            type="number"
+                            placeholder="Symbol 2 Quantity"
+                            className={
+                                `col-span-11 block w-full bg-zinc-800 px-4 py-2 focus:outline-0 ` +
+                                `${formik.touched.symbol2Qty && formik.errors.symbol2Qty ? "border border-1 border-red-500" : ""}`
+                            }
+                            {...formik.getFieldProps("symbol2Qty")}
+                        />
+                        { formik.touched.symbol2Qty && formik.errors.symbol2Qty &&
+                            <span className="text-red-500">* {formik.errors.symbol2Qty}</span>
+                        }
+                    </div>
+                }
                 <div className="col-span-12">
                     <input
                         type="number"
