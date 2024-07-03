@@ -29,7 +29,8 @@ export interface OrderEventData
     symbol1BaseQty: string;
     symbol2BaseQty: string;
     quoteQty?: string;
-    entryResidual?: string;
+    symbol1EntryPrice?: string;
+    symbol2EntryPrice?: string;
     regressionSlope: string;
     takeProfit?: string;
     stopLoss?: string;
