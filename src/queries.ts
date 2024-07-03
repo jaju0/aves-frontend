@@ -63,7 +63,8 @@ export interface OrderSubmitionRequestBody
     symbol1: string;
     symbol2: string;
     regressionSlope: number;
-    entryResidual?: number;
+    symbol1EntryPrice?: number;
+    symbol2EntryPrice?: number;
     takeProfit?: number;
     stopLoss?: number;
     quoteQty?: number;
@@ -73,7 +74,10 @@ export interface OrderSubmitionRequestBody
 export interface OrderAmendmentRequestBody
 {
     orderId: string;
-    entryResidual: number;
+    symbol1EntryPrice?: number;
+    symbol2EntryPrice?: number;
+    takeProfit?: number | null;
+    stopLoss?: number | null;
 }
 
 export interface OrderCancelationRequestBody
@@ -122,7 +126,8 @@ export interface OrderData
     symbol1BaseQty: string;
     symbol2BaseQty: string;
     quoteQty?: string;
-    entryResidual?: string;
+    symbol1EntryPrice?: string;
+    symbol2EntryPrice?: string;
     regressionSlope: string;
     takeProfit?: string;
     stopLoss?: string;
