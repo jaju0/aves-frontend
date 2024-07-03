@@ -177,7 +177,7 @@ export class PositionPaneRenderer implements ISeriesPrimitivePaneRenderer
         ctx.font = "lighter 8pt Arial";
 
         const sizeText = `${position.data.symbol1BaseQty} ${position.data.symbol2BaseQty}`;
-        const pnlText = position.data.lastPnl;
+        const pnlText = parseFloat(position.data.lastPnl).toFixed(4);
         const color = getPositionColor(position);
         const colorShade = getPositionColorShade(position);
 
