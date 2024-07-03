@@ -4,9 +4,8 @@ import { ISeriesApi } from "lightweight-charts";
 import { SymbolPairContext } from "../../pages/ChartPage";
 import { Chart } from "../Chart";
 import { LineSeries } from "../Series";
-import { LineSeriesOrders } from "../LineSeriesOrders";
-import { LineSeriesPositions } from "../LineSeriesPositions";
 import { ChartDataContext, SpreadDataFeedContext } from "../SpreadChartWithControl";
+import { ChartTrading } from "../ChartTrading";
 
 export interface SpreadChartProps
 {
@@ -102,8 +101,7 @@ export function SpreadChart(props: SpreadChartProps)
                             color={colors.sky[500]}
                             lineWidth={1}
                         >
-                            <LineSeriesOrders />
-                            <LineSeriesPositions />
+                            <ChartTrading />
                         </LineSeries>
                     </Chart>
                 }
