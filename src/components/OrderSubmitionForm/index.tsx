@@ -101,7 +101,7 @@ export function OrderSubmitionForm()
     });
 
     useEffect(() => {
-        formik.setFieldValue("hedgeRatio", chartData?.statistics?.hedgeRatio);
+        formik.setFieldValue("hedgeRatio", chartData?.statistics?.hedgeRatio ?? "");
     }, [chartData]);
 
     return (
