@@ -15,3 +15,17 @@ export interface ChartOrder
     amendedStopLoss?: number;
     focused: boolean;
 }
+
+export interface ChartPosition
+{
+    data: PositionEventData;
+    closeObject: ChartObject;
+    takeProfitCloseObject?: ChartObject;
+    takeProfitMoveObject?: ChartObject;
+    stopLossCloseObject?: ChartObject;
+    stopLossMoveObject?: ChartObject;
+    amendedTakeProfit?: number;
+    amendedStopLoss?: number;
+    focused: boolean;
+}
+
