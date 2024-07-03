@@ -87,6 +87,14 @@ export interface PositionLiquidationRequestBody
     symbol2: string;
 }
 
+export interface PositionAmendmentRequestBody
+{
+    symbol1: string;
+    symbol2: string;
+    takeProfit?: string | null;
+    stopLoss?: string | null;
+}
+
 export interface SuccessfulLoginResponse
 {
     accessToken: string;
@@ -416,6 +424,20 @@ export const positionLiquidationMutation = {
         try
         {
             const response = await service.post("/position/liquidate", body);
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+}
+
+export const positionAmendmentMutation = {
+    mutationFn: async (body: PositionAmendmentRequestBody) => {
+        try
+        {
+            const response = await service.post("/position/amend", body);
             return response.data;
         }
         catch(error)
