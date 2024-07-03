@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { SymbolPairContext } from "../../pages/ChartPage";
-import { ChartDataContext } from "../SpreadChartWithControl";
+import { ChartDataContext, SpreadDataFeedContext } from "../SpreadChartWithControl";
 import { orderSubmitionMutation } from "../../queries";
 
 export interface OrderSubmitionFormData
@@ -22,6 +22,7 @@ export function OrderSubmitionForm()
 {
     const [symbolPair] = useContext(SymbolPairContext);
     const [chartData] = useContext(ChartDataContext);
+    const spreadDataFeed = useContext(SpreadDataFeedContext);
     const submitOrderMutation = useMutation(orderSubmitionMutation);
 
     const formik = useFormik<OrderSubmitionFormData>({
@@ -56,17 +57,35 @@ export function OrderSubmitionForm()
                 return;
             }
 
+            const symbol2LatestPrice = spreadDataFeed.getLatestPriceOfSymbol2();
+            const slope = chartData.statistics.hedgeRatio;
+            if(symbol2LatestPrice === undefined)
+            {
+                console.error("Cannot submit order: symbol2LatestPrice is undefined");
+                return;
+            }
+
+            const entryResidual = values.entry === "" ? undefined : +values.entry;
+            const symbol1Price = entryResidual === undefined ? undefined : slope * symbol2LatestPrice + +values.entry;
+
+            const takeProfitResidual = values.takeProfit === "" ? undefined : +values.takeProfit;
+            const stopLossResidual = values.stopLoss === "" ? undefined : +values.stopLoss;
+
+            const takeProfit = takeProfitResidual && entryResidual ? takeProfitResidual - entryResidual : undefined;
+            const stopLoss = stopLossResidual && entryResidual ? stopLossResidual - entryResidual : undefined;
+
             submitOrderMutation.mutateAsync({
                 type: values.type,
                 side: values.side,
                 symbol1: symbolPair.symbol1,
                 symbol2: symbolPair.symbol2,
                 regressionSlope: values.hedgeRatio === "" ? chartData.statistics.hedgeRatio : +values.hedgeRatio,
-                entryResidual: values.entry === "" ? undefined : +values.entry,
+                symbol1EntryPrice: symbol1Price,
+                symbol2EntryPrice: symbol1Price === undefined ? undefined : symbol2LatestPrice,
                 baseQty: values.qtyType === "BaseQty" ? +values.qty : undefined,
                 quoteQty: values.qtyType === "QuoteQty" ? +values.qty : undefined,
-                stopLoss: values.stopLoss === "" ? undefined : +values.stopLoss,
-                takeProfit: values.takeProfit === "" ? undefined : +values.takeProfit,
+                stopLoss: stopLoss,
+                takeProfit: takeProfit,
             });
         }
     });
