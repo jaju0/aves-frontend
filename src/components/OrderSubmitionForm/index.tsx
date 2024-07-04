@@ -64,22 +64,29 @@ export function OrderSubmitionForm()
                 return;
             }
 
+            const symbol1LatestPrice = spreadDataFeed.getLatestPriceOfSymbol1();
             const symbol2LatestPrice = spreadDataFeed.getLatestPriceOfSymbol2();
             const slope = chartData.statistics.hedgeRatio;
+            if(symbol1LatestPrice === undefined)
+            {
+                console.error("Cannot submit order: symbol1LatestPrice is undefined");
+                return;
+            }
+
             if(symbol2LatestPrice === undefined)
             {
                 console.error("Cannot submit order: symbol2LatestPrice is undefined");
                 return;
             }
 
-            const entryResidual = values.entry === "" ? undefined : +values.entry;
+            const entryResidual = values.entry === "" ? symbol1LatestPrice - slope * symbol2LatestPrice : +values.entry;
             const symbol1Price = entryResidual === undefined ? undefined : slope * symbol2LatestPrice + +values.entry;
 
             const takeProfitResidual = values.takeProfit === "" ? undefined : +values.takeProfit;
             const stopLossResidual = values.stopLoss === "" ? undefined : +values.stopLoss;
 
-            const takeProfit = takeProfitResidual && entryResidual ? takeProfitResidual - entryResidual : undefined;
-            const stopLoss = stopLossResidual && entryResidual ? stopLossResidual - entryResidual : undefined;
+            const takeProfit = takeProfitResidual !== undefined ? takeProfitResidual - entryResidual : undefined;
+            const stopLoss = stopLossResidual !== undefined ? stopLossResidual - entryResidual : undefined;
 
             submitOrderMutation.mutateAsync({
                 type: values.type,
