@@ -223,9 +223,9 @@ export class OrderPaneRenderer implements ISeriesPrimitivePaneRenderer
 
         this.renderLine(ctx, mediaSize, "entry", order, entry, order.entryMoveObject, order.entryCloseObject);
 
-        if(takeProfit && order.takeProfitMoveObject && order.takeProfitCloseObject)
+        if(takeProfit !== undefined && order.takeProfitMoveObject && order.takeProfitCloseObject)
             this.renderLine(ctx, mediaSize, "take_profit", order, amendedTakeProfit ?? takeProfit, order.takeProfitMoveObject, order.takeProfitCloseObject);
-        if(stopLoss && order.stopLossMoveObject && order.stopLossCloseObject)
+        if(stopLoss !== undefined && order.stopLossMoveObject && order.stopLossCloseObject)
             this.renderLine(ctx, mediaSize, "stop_loss", order, amendedStopLoss ?? stopLoss, order.stopLossMoveObject, order.stopLossCloseObject);
 
         if(!order.focused)

@@ -320,9 +320,9 @@ export class PositionPaneRenderer implements ISeriesPrimitivePaneRenderer
 
         this.renderPositionLine(ctx, mediaSize, position, position.closeObject, entryResidual);
 
-        if(errorAdjustedTakeProfit && position.takeProfitMoveObject && position.takeProfitCloseObject)
+        if(errorAdjustedTakeProfit !== undefined && position.takeProfitMoveObject && position.takeProfitCloseObject)
             this.renderOrderLine(ctx, mediaSize, "take_profit", position, position.amendedTakeProfit ?? errorAdjustedTakeProfit, position.takeProfitMoveObject, position.takeProfitCloseObject);
-        if(errorAdjustedStopLoss && position.stopLossMoveObject && position.stopLossCloseObject)
+        if(errorAdjustedStopLoss !== undefined && position.stopLossMoveObject && position.stopLossCloseObject)
             this.renderOrderLine(ctx, mediaSize, "stop_loss", position, position.amendedStopLoss ?? errorAdjustedStopLoss, position.stopLossMoveObject, position.stopLossCloseObject);
 
         const takeProfit = position.amendedTakeProfit ?? (errorAdjustedTakeProfit === undefined ? undefined : errorAdjustedTakeProfit);
