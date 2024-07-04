@@ -143,8 +143,8 @@ export function AccountPage()
                         </thead>
                         <tbody>
                             { credentialsResponse &&
-                                credentialsResponse.credentials.map(credential => (
-                                    <tr>
+                                credentialsResponse.credentials.map((credential, index) => (
+                                    <tr key={index}>
                                         <td className={credential.isActive ? "font-bold" : ""}>{credential.key}</td>
                                         <td className={credential.isActive ? "font-bold" : ""}>{credential.demoTrading ? "true" : "false"}</td>
                                         <td>
