@@ -121,5 +121,3 @@ export function PairSearchForm()
         </form>
     );
 }
-
-// TODO: - add formik validation messages to form elements
