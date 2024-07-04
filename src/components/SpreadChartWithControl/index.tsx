@@ -48,7 +48,11 @@ export function SpreadChartWithControl()
             residualsLineSeriesRef.current?.update(data);
         });
 
-        spreadDataFeed.reset(symbolPair.interval, symbolPair.symbol1, symbolPair.symbol2);
+        if(
+            symbolPair.symbol1 !== undefined && symbolPair.symbol2 !== undefined &&
+            symbolPair.symbol1 !== "" && symbolPair.symbol2 !== ""
+        )
+            spreadDataFeed.reset(symbolPair.interval, symbolPair.symbol1, symbolPair.symbol2);
     }, []);
 
     return (

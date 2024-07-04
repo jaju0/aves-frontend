@@ -19,7 +19,10 @@ export function SpreadChart(props: SpreadChartProps)
     const spreadDataFeed = useContext(SpreadDataFeedContext);
 
     useEffect(() => {
-        if(symbolPair.symbol1 === "" || symbolPair.symbol2 === "")
+        if(
+            symbolPair.symbol1 === undefined || symbolPair.symbol2 === undefined ||
+            symbolPair.symbol1 === "" || symbolPair.symbol2 === ""
+        )
             return;
 
         setChartData(undefined);
