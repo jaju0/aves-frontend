@@ -2,8 +2,7 @@ import { useContext, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { SymbolPairContext } from "../../pages/ChartPage";
-import { ChartDataContext, SpreadDataFeedContext } from "../SpreadChartWithControl";
+import { ChartDataContext, SpreadDataFeedContext, SymbolPairContext } from "../../pages/ChartPage";
 import { orderSubmitionMutation } from "../../queries";
 
 export interface OrderSubmitionFormData
