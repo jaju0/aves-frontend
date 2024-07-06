@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CancelOrderEvent, ChangeOrderEvent, ChangePositionEvent, ChartTradingPrimitive, LiquidatePositionEvent } from "../../lwcharts/plugins/ChartTradingPrimitive";
 import { ChartContainerContext } from "../Chart/ChartContainer";
 import { LineSeriesContext } from "../Series";
-import { SpreadDataFeedContext, WSDataFeedContext } from "../SpreadChartWithControl";
+import { SpreadDataFeedContext, WSDataFeedContext } from "../../pages/ChartPage";
 import { OrderEventData, PositionEventData, WebsocketEvent } from "../../WSDataFeed";
 import { orderAmendmentMutation, orderCancelationMutation, orderListQuery, positionAmendmentMutation, positionLiquidationMutation, positionListQuery } from "../../queries";
 

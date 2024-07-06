@@ -1,10 +1,9 @@
 import { useContext, useEffect } from "react";
 import colors from "tailwindcss/colors";
 import { ISeriesApi } from "lightweight-charts";
-import { SymbolPairContext } from "../../pages/ChartPage";
+import { ChartDataContext, SpreadDataFeedContext, SymbolPairContext } from "../../pages/ChartPage";
 import { Chart } from "../Chart";
 import { LineSeries } from "../Series";
-import { ChartDataContext, SpreadDataFeedContext } from "../SpreadChartWithControl";
 import { ChartTrading } from "../ChartTrading";
 
 export interface SpreadChartProps
