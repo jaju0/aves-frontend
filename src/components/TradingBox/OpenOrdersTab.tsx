@@ -22,12 +22,17 @@ export function OpenOrdersTab()
                 return;
 
             if(ev.data.status !== "Executed" && ev.data.status !== "Failed")
-                setOrdersMap(ordersMap.set(ev.data.id, ev.data));
+            {
+                setOrdersMap(last => new Map([
+                    ...Array.from(last.entries()),
+                    [ev.data.id, ev.data],
+                ]));
+            }
             else
             {
-                const newOrdersMap = new Map(ordersMap);
-                newOrdersMap.delete(ev.data.id);
-                setOrdersMap(newOrdersMap);
+                setOrdersMap(last => new Map([
+                    ...Array.from(last.entries()).filter(entry => entry[0] !== ev.data.id),
+                ]));
             }
         }
 
@@ -37,9 +42,10 @@ export function OpenOrdersTab()
         orderListQuery.queryFn().then(data => {
             if(data)
             {
-                const newEntries = data.map(val => [val.id, val]) as [string, OrderData][];
-                const existingEntries = Array.from(ordersMap);
-                setOrdersMap(new Map([...existingEntries, ...newEntries]));
+                setOrdersMap(last => new Map([
+                    ...Array.from(last.entries()),
+                    ...(data.map(entry => [entry.id, entry]) as [string, OrderData][]),
+                ]));
             }
 
             setIsLoading(false);

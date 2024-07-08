@@ -25,12 +25,17 @@ export function OpenPositionsTab()
                 return;
 
             if(ev.data.open)
-                setPositionsMap(new Map(positionsMap).set(ev.data.id, ev.data));
+            {
+                setPositionsMap(last => new Map([
+                    ...Array.from(last.entries()),
+                    [ev.data.id, ev.data],
+                ]));
+            }
             else
             {
-                const newPositionsMap = new Map(positionsMap);
-                newPositionsMap.delete(ev.data.id);
-                setPositionsMap(newPositionsMap);
+                setPositionsMap(last => new Map([
+                    ...Array.from(last.entries()).filter(entry => entry[0] !== ev.data.id),
+                ]));
             }
         }
 
@@ -40,9 +45,10 @@ export function OpenPositionsTab()
         positionListQuery.queryFn().then(data => {
             if(data)
             {
-                const newEntries = data.map(val => [val.id, val]) as [string, PositionData][];
-                const existingEntries = Array.from(positionsMap);
-                setPositionsMap(new Map([...existingEntries, ...newEntries]));
+                setPositionsMap(last => new Map([
+                    ...Array.from(last.entries()),
+                    ...(data.map(entry => [entry.id, entry]) as [string, PositionData][]),
+                ]));
             }
 
             setIsLoading(false);
