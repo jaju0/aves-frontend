@@ -155,10 +155,17 @@ export class SpreadDataFeed extends EventEmitter<{
     {
         if(this.interval !== undefined && this.symbol1 !== undefined && this.symbol2 !== undefined)
         {
-            this.wsClient.unsubscribeV5([
-                `kline.${this.interval}.${this.symbol1}`,
-                `kline.${this.interval}.${this.symbol2}`,
-            ], "linear");
+            try
+            {
+                this.wsClient.unsubscribeV5([
+                    `kline.${this.interval}.${this.symbol1}`,
+                    `kline.${this.interval}.${this.symbol2}`,
+                ], "linear");
+            }
+            catch(error)
+            {
+                console.error(`kline.${this.interval}.${this.symbol1} and kline.${this.interval}.${this.symbol2} already unsubscribed`);
+            }
 
             this.wsClient.off("update", this.websocketUpdate.bind(this));
         }
@@ -168,10 +175,17 @@ export class SpreadDataFeed extends EventEmitter<{
     {
         this.wsClient.on("update", this.websocketUpdate.bind(this));
 
-        this.wsClient.subscribeV5([
-            `kline.${this.interval}.${this.symbol1}`,
-            `kline.${this.interval}.${this.symbol2}`,
-        ], "linear");
+        try
+        {
+            this.wsClient.subscribeV5([
+                `kline.${this.interval}.${this.symbol1}`,
+                `kline.${this.interval}.${this.symbol2}`,
+            ], "linear");
+        }
+        catch(error)
+        {
+            console.error(`kline.${this.interval}.${this.symbol1} and kline.${this.interval}.${this.symbol2} already subscribed`);
+        }
     }
 
     private websocketUpdate(response: any)
