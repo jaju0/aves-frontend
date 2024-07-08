@@ -1,5 +1,5 @@
 import { RestClientV5, WebsocketClient } from "bybit-api";
-import { createContext, useLayoutEffect, useMemo } from "react";
+import { createContext, useLayoutEffect, useRef } from "react";
 import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClient, QueryClientProvider, useMutation } from "@tanstack/react-query";
@@ -22,7 +22,7 @@ export const BybitConnectorsContext = createContext<BybitConnectors>({} as Bybit
 
 export function App()
 {
-    const queryClient = useMemo(() => (
+    const queryClientRef = useRef(
         new QueryClient({
             defaultOptions: {
                 queries: {
@@ -30,35 +30,29 @@ export function App()
                 }
             }
         })
-    ), []);
+    );
 
-    const bybitConnectors = {
-        restClient: useMemo(() => {
-            return new RestClientV5();
-        }, []),
-        wsClient: useMemo(() => {
-            return new WebsocketClient({
-                market: "v5",
-            });
-        }, []),
-    };
+    const bybitConnectorsRef = useRef<BybitConnectors>({
+        restClient: new RestClientV5(),
+        wsClient: new WebsocketClient({ market: "v5" }),
+    });
 
-    const router = useMemo(() => (
+    const routerRef = useRef(
         createBrowserRouter(
             createRoutesFromElements(
                 <Route path="/">
                     <Route element={<ProtectedAreaLayout />}>
                         <Route path="/chart" element={<ChartPage />} />
-                        <Route path="/account" loader={accountPageLoader.bind(null, queryClient)} element={<AccountPage />} />
-                        <Route path="/users" loader={usersPageLoader.bind(null, queryClient)} element={<UsersPage />} />
+                        <Route path="/account" loader={accountPageLoader.bind(null, queryClientRef.current)} element={<AccountPage />} />
+                        <Route path="/users" loader={usersPageLoader.bind(null, queryClientRef.current)} element={<UsersPage />} />
                     </Route>
                     <Route path="/login" element={<LoginPage />} />
                 </Route>
             )
         )
-    ), []);
+    );
 
-    const jwtTokenRefreshMutationResult = useMutation(refreshJwtTokenMutation, queryClient);
+    const jwtTokenRefreshMutationResult = useMutation(refreshJwtTokenMutation, queryClientRef.current);
 
     useLayoutEffect(() => {
         jwtTokenRefreshMutationResult.mutateAsync().then(jwtData => {
@@ -70,10 +64,10 @@ export function App()
     }, []);
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <BybitConnectorsContext.Provider value={bybitConnectors}>
+        <QueryClientProvider client={queryClientRef.current}>
+            <BybitConnectorsContext.Provider value={bybitConnectorsRef.current}>
                 <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID}>
-                    <RouterProvider router={router} />
+                    <RouterProvider router={routerRef.current} />
                 </GoogleOAuthProvider>
             </BybitConnectorsContext.Provider>
         </QueryClientProvider>
