@@ -11,7 +11,7 @@ export interface TradingBoxState
 export function TradingBox()
 {
     const [state, setState] = useState<TradingBoxState>({
-        selectedTab: "OpenOrders",
+        selectedTab: "OpenPositions",
     });
 
     const openPositionsTabClicked = () => {

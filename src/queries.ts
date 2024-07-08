@@ -479,8 +479,6 @@ export const bybitKlineQuery = (bybitRestClient: RestClientV5, symbol: string, i
             limit: 1000,
         });
 
-        console.log(response);
-
         return response;
     },
 });
