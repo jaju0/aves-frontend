@@ -65,6 +65,15 @@ export function OpenOrdersTab()
         );
     }
 
+    if(!ordersMap.size)
+    {
+        return (
+            <div className="w-full py-4 text-center">
+                <span className="font-semibold text-xl">No orders yet.</span>
+            </div>
+        );
+    }
+
     return (
         <Scrollbars
             autoHeight

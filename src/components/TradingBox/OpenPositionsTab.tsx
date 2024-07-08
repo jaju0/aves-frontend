@@ -68,6 +68,15 @@ export function OpenPositionsTab()
         );
     }
 
+    if(!positionsMap.size)
+    {
+        return (
+            <div className="w-full py-4 text-center">
+                <span className="font-semibold text-xl">No positions yet.</span>
+            </div>
+        );
+    }
+
     return (
         <Scrollbars
             autoHeight
