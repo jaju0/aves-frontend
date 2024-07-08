@@ -1,9 +1,10 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ChartDataContext, SpreadDataFeedContext, SymbolPairContext } from "../../pages/ChartPage";
 import { orderSubmitionMutation } from "../../queries";
+import { CircleSpinner } from "../CircleSpinner";
 
 export interface OrderSubmitionFormData
 {
@@ -24,6 +25,7 @@ export function OrderSubmitionForm()
     const [chartData] = useContext(ChartDataContext);
     const spreadDataFeed = useContext(SpreadDataFeedContext);
     const submitOrderMutation = useMutation(orderSubmitionMutation);
+    const [pendingSubmition, setPendingSubmition] = useState<boolean>(false);
 
     const formik = useFormik<OrderSubmitionFormData>({
         initialValues: {
@@ -87,6 +89,8 @@ export function OrderSubmitionForm()
             const takeProfit = takeProfitResidual !== undefined ? takeProfitResidual - entryResidual : undefined;
             const stopLoss = stopLossResidual !== undefined ? stopLossResidual - entryResidual : undefined;
 
+            setPendingSubmition(true);
+
             submitOrderMutation.mutateAsync({
                 type: values.type,
                 side: values.side,
@@ -102,7 +106,7 @@ export function OrderSubmitionForm()
                 quoteQty: values.qtyType === "QuoteQty" ? +values.qty : undefined,
                 stopLoss: stopLoss,
                 takeProfit: takeProfit,
-            });
+            }).finally(() => setPendingSubmition(false));
         }
     });
 
@@ -211,7 +215,16 @@ export function OrderSubmitionForm()
                     />
                 </div>
                 <div className="col-span-12">
-                    <button type="submit" className="transition duration-150 ease-in-out delay-100 block w-full px-4 py-1 rounded-full border-2 hover:bg-white hover:text-zinc-950 cursor-pointer">submit</button>
+                    <button disabled={pendingSubmition} type="submit" className={
+                        "transition duration-150 ease-in-out delay-100 block w-full px-4 py-1 rounded-full border-2 hover:bg-white hover:text-zinc-950 cursor-pointer " +
+                        "disabled:bg-transparent disabled:text-white disabled:cursor-not-allowed"
+                    }
+                    >
+                        <span>submit</span>
+                        { pendingSubmition &&
+                            <CircleSpinner className="inline-block mx-3" />
+                        }
+                    </button>
                 </div>
             </div>
         </form>
