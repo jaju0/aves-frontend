@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CancelOrderEvent, ChangeOrderEvent, ChangePositionEvent, ChartTradingPrimitive, LiquidatePositionEvent } from "../../lwcharts/plugins/ChartTradingPrimitive";
 import { ChartContainerContext } from "../Chart/ChartContainer";
 import { LineSeriesContext } from "../Series";
-import { SpreadDataFeedContext, WSDataFeedContext } from "../../pages/ChartPage";
+import { SpreadDataFeedContext, SymbolPairContext, WSDataFeedContext } from "../../pages/ChartPage";
 import { OrderEventData, PositionEventData, WebsocketEvent } from "../../WSDataFeed";
 import { orderAmendmentMutation, orderCancelationMutation, orderListQuery, positionAmendmentMutation, positionLiquidationMutation, positionListQuery } from "../../queries";
 
@@ -27,6 +27,7 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
     const queryClient = useQueryClient();
     const chart = useContext(ChartContainerContext);
     const parent = useContext(LineSeriesContext);
+    const [symbolPair] = useContext(SymbolPairContext);
     const wsDataFeed = useContext(WSDataFeedContext);
     const spreadDataFeed = useContext(SpreadDataFeedContext);
     const liquidatePositionMutation = useMutation(positionLiquidationMutation);
@@ -94,10 +95,16 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
         };
 
         const orderListener = (event: WebsocketEvent<OrderEventData>) => {
+            if(event.data.symbol1 !== symbolPair.symbol1 || event.data.symbol2 !== symbolPair.symbol2)
+                return;
+
             updateSeries(event);
         }
 
         const positionListener = (event: WebsocketEvent<PositionEventData>) => {
+            if(event.data.symbol1 !== symbolPair.symbol1 || event.data.symbol2 !== symbolPair.symbol2)
+                return;
+
             updateSeries(event);
         }
 
@@ -111,6 +118,9 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
 
         queryClient.fetchQuery(orderListQuery).then(orders => {
             orders?.forEach(order => {
+                if(order.symbol1 !== symbolPair.symbol1 || order.symbol2 !== symbolPair.symbol2)
+                    return;
+
                 updateSeries({
                     topic: "order",
                     data: order,
@@ -120,6 +130,9 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
 
         queryClient.fetchQuery(positionListQuery).then(positions => {
             positions?.forEach(position => {
+                if(position.symbol1 !== symbolPair.symbol1 || position.symbol2 !== symbolPair.symbol2)
+                    return;
+
                 updateSeries({
                     topic: "position",
                     data: position,
