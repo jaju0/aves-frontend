@@ -31,7 +31,7 @@ export function OpenOrdersTab()
             }
         }
 
-        wsDataFeed.on("order", orderListener);
+        wsDataFeed?.on("order", orderListener);
 
         setIsLoading(true);
         orderListQuery.queryFn().then(data => {
@@ -46,9 +46,9 @@ export function OpenOrdersTab()
         }).catch(() => setIsLoading(false));
 
         return () => {
-            wsDataFeed.off("order", orderListener);
+            wsDataFeed?.off("order", orderListener);
         };
-    }, []);
+    }, [wsDataFeed]);
 
     if(isLoading)
     {

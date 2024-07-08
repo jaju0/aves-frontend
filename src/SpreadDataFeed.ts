@@ -83,6 +83,12 @@ export class SpreadDataFeed extends EventEmitter<{
         this.subscribe();
     }
 
+    public shutdown()
+    {
+        this.removeAllListeners();
+        this.unsubscribe();
+    }
+
     public getLatestPriceOfSymbol1()
     {
         if(this.symbol1Prices.length)

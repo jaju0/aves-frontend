@@ -63,8 +63,8 @@ export function OrderSubmitionForm()
                 return;
             }
 
-            const symbol1LatestPrice = spreadDataFeed.getLatestPriceOfSymbol1();
-            const symbol2LatestPrice = spreadDataFeed.getLatestPriceOfSymbol2();
+            const symbol1LatestPrice = spreadDataFeed?.getLatestPriceOfSymbol1();
+            const symbol2LatestPrice = spreadDataFeed?.getLatestPriceOfSymbol2();
             const slope = chartData.statistics.hedgeRatio;
             if(symbol1LatestPrice === undefined)
             {

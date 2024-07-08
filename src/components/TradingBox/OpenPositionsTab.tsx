@@ -17,6 +17,9 @@ export function OpenPositionsTab()
     const [positionsMap, setPositionsMap] = useState<Map<string, PositionData>>(new Map());
 
     useEffect(() => {
+        if(!wsDataFeed)
+            return;
+
         const positionListener = (ev: WebsocketEvent<PositionEventData>) => {
             if(ev.topic !== "position")
                 return;
@@ -48,7 +51,7 @@ export function OpenPositionsTab()
         return () => {
             wsDataFeed.off("position", positionListener);
         }
-    }, []);
+    }, [wsDataFeed]);
 
     if(isLoading)
     {

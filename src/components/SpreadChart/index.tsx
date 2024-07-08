@@ -26,7 +26,7 @@ export function SpreadChart(props: SpreadChartProps)
 
         setChartData(undefined);
 
-        spreadDataFeed.reset(symbolPair.interval, symbolPair.symbol1, symbolPair.symbol2);
+        spreadDataFeed?.reset(symbolPair.interval, symbolPair.symbol1, symbolPair.symbol2);
     }, [symbolPair]);
 
     return (

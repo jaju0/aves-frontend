@@ -38,6 +38,9 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
         api() {
             if(!this._api)
             {
+                if(!spreadDataFeed)
+                    throw new Error("SpreadDataFeedContext has an undefined value on ChartTrading component!");
+
                 this._api = new ChartTradingPrimitive(spreadDataFeed, chart.api(), parent.api());
                 parent.api().attachPrimitive(this._api);
             }
@@ -103,8 +106,8 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
         currentRef.api().on("change-order", changeOrderListener);
         currentRef.api().on("cancel-order", cancelOrderListener);
 
-        wsDataFeed.on("order", orderListener);
-        wsDataFeed.on("position", positionListener);
+        wsDataFeed?.on("order", orderListener);
+        wsDataFeed?.on("position", positionListener);
 
         queryClient.fetchQuery(orderListQuery).then(orders => {
             orders?.forEach(order => {
@@ -129,8 +132,8 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
             currentRef.api().off("liquidate-position", liquidatePositionListener);
             currentRef.api().off("change-order", changeOrderListener);
             currentRef.api().off("cancel-order", cancelOrderListener);
-            wsDataFeed.off("order", orderListener);
-            wsDataFeed.off("position", positionListener);
+            wsDataFeed?.off("order", orderListener);
+            wsDataFeed?.off("position", positionListener);
             currentRef.free();
         };
     }, []);

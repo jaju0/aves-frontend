@@ -1,5 +1,5 @@
 import { KlineIntervalV3 } from "bybit-api";
-import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ISeriesApi, LineData, Time, WhitespaceData } from "lightweight-charts";
 import { BybitConnectorsContext } from "../../App";
@@ -23,8 +23,22 @@ export interface ChartData
     initialResidualData?: (LineData<Time> | WhitespaceData<Time>)[];
 }
 
-export const SpreadDataFeedContext = createContext<SpreadDataFeed>({} as SpreadDataFeed);
-export const WSDataFeedContext = createContext<WSDataFeed>({} as WSDataFeed);
+export interface SpreadDataFeedRef
+{
+    _api?: SpreadDataFeed;
+    api(): SpreadDataFeed;
+    free(): void;
+}
+
+export interface WSDataFeedRef
+{
+    _api?: WSDataFeed;
+    api(): WSDataFeed;
+    free(): void;
+}
+
+export const SpreadDataFeedContext = createContext<SpreadDataFeed | undefined>(undefined);
+export const WSDataFeedContext = createContext<WSDataFeed | undefined>(undefined);
 export const ChartDataContext = createContext<[ChartData | undefined, React.Dispatch<React.SetStateAction<ChartData | undefined>>]>({} as [ChartData | undefined, React.Dispatch<React.SetStateAction<ChartData | undefined>>]);
 export const SymbolPairContext = createContext<[SymbolPair, React.Dispatch<React.SetStateAction<SymbolPair>>]>({} as [SymbolPair, React.Dispatch<React.SetStateAction<SymbolPair>>]);
 
@@ -35,17 +49,40 @@ export function ChartPage()
     const bybitConnectors = useContext(BybitConnectorsContext);
     const [symbolPair, setSymbolPair] = useState<SymbolPair>(localSymbolPair);
     const [chartData, setChartData] = useState<ChartData>();
+    const [spreadDataFeed, setSpreadDataFeed] = useState<SpreadDataFeed>();
+    const [wsDataFeed, setWSDataFeed] = useState<WSDataFeed>();
     const residualsLineSeriesRef = useRef<ISeriesApi<"Line">>(null);
 
-    const spreadDataFeed = useMemo(() => {
-        return new SpreadDataFeed(queryClient, bybitConnectors.restClient, bybitConnectors.wsClient);
-    }, []);
+    const spreadDataFeedRef = useRef<SpreadDataFeedRef>({
+        api() {
+            if(!this._api)
+                this._api = new SpreadDataFeed(queryClient, bybitConnectors.restClient, bybitConnectors.wsClient);
 
-    const wsDataFeed = useMemo(() => {
-        return new WSDataFeed();
-    }, []);
+            return this._api;
+        },
+        free() {
+            this._api?.shutdown();
+            this._api = undefined;
+        }
+    });
 
-    useLayoutEffect(() => {
+    const wsDataFeedRef = useRef<WSDataFeedRef>({
+        api() {
+            if(!this._api)
+                this._api = new WSDataFeed();
+            
+            return this._api;
+        },
+        free() {
+            this._api?.shutdown();
+            this._api = undefined;
+        }
+    });
+
+    useEffect(() => {
+        const spreadDataFeed = spreadDataFeedRef.current.api();
+        const wsDataFeed = wsDataFeedRef.current.api();
+
         spreadDataFeed.on("init", (data) => {
             setChartData({
                 statistics: data.statistics,
@@ -64,6 +101,14 @@ export function ChartPage()
             symbolPair.symbol1 !== "" && symbolPair.symbol2 !== ""
         )
             spreadDataFeed.reset(symbolPair.interval, symbolPair.symbol1, symbolPair.symbol2);
+
+        setSpreadDataFeed(spreadDataFeed);
+        setWSDataFeed(wsDataFeed);
+
+        return () => {
+            spreadDataFeedRef.current.free();
+            wsDataFeedRef.current.free();
+        }
     }, []);
 
     useEffect(() => {

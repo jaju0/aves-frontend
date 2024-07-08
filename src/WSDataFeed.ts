@@ -69,11 +69,28 @@ export class WSDataFeed extends EventEmitter<{
     private jwtData?: SuccessfulLoginResponse;
     private socket?: WebSocket;
 
+    private isShuttingDown: boolean;
+    private reconnectTimeoutMs: number;
+
     constructor()
     {
         super();
         this.host = "ws://localhost:4000/v1/ws";
+        this.isShuttingDown = false;
+        this.reconnectTimeoutMs = 5000;
 
+        this.connect();
+    }
+
+    public shutdown()
+    {
+        this.isShuttingDown = true;
+        this.removeAllListeners();
+        this.socket?.close();
+    }
+
+    private connect()
+    {
         this.jwtData = useJwtData();
         if(!this.jwtData)
             return;
@@ -92,11 +109,23 @@ export class WSDataFeed extends EventEmitter<{
 
     private onClose(ev: CloseEvent)
     {
+        ev; // ignore unused
+
+        this.socket?.removeEventListener("open", this.onOpen.bind(this));
+        this.socket?.removeEventListener("close", this.onClose.bind(this));
+        this.socket?.removeEventListener("error", this.onError.bind(this));
+        this.socket?.removeEventListener("message", this.onMessage.bind(this));
+
+        if(this.isShuttingDown)
+            return;
+
+        console.log(`Websocket is closed. Reconnect will be attempted in ${this.reconnectTimeoutMs / 1000} second(s).`);
+        setTimeout(this.connect.bind(this), this.reconnectTimeoutMs);
     }
 
-    private onError(ev: Event)
+    private onError()
     {
-        console.log(ev);
+        this.socket?.close();
     }
 
     private onMessage(ev: MessageEvent<any>)
