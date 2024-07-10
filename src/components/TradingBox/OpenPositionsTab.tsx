@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Scrollbars from "react-custom-scrollbars-2";
 import colors from "tailwindcss/colors";
-import { PositionData, positionListQuery } from "../../queries";
-import { CircleSpinner } from "../CircleSpinner";
+import { PositionData } from "../../provider/QueriesWithAuthProvider/datatypes";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 import { WSDataFeedContext } from "../../pages/ChartPage";
+import { CircleSpinner } from "../CircleSpinner";
 import { PositionEventData, WebsocketEvent } from "../../WSDataFeed";
 import { AddPositionTakeProfitForm } from "./AddPositionTakeProfitForm";
 import { AddPositionStopLossForm } from "./AddPositionStopLossForm";
@@ -11,6 +13,8 @@ import { LiquidationForm } from "./LiquidationForm";
 
 export function OpenPositionsTab()
 {
+    const queryClient = useQueryClient();
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
     const wsDataFeed = useContext(WSDataFeedContext);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -42,7 +46,7 @@ export function OpenPositionsTab()
         wsDataFeed.on("position", positionListener);
 
         setIsLoading(true);
-        positionListQuery.queryFn().then(data => {
+        queryClient.fetchQuery(queryFunctionsWithAuth.positionListQuery).then(data => {
             if(data)
             {
                 setPositionsMap(last => new Map([

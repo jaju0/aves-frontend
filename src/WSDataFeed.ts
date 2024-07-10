@@ -1,6 +1,4 @@
 import EventEmitter from "events";
-import { useJwtData } from "./hooks/useJwtData";
-import { SuccessfulLoginResponse } from "./queries";
 
 export const websocketEventTopic = ["order", "position"] as const;
 export type WebsocketEventTopic = typeof websocketEventTopic[number];
@@ -66,16 +64,17 @@ export class WSDataFeed extends EventEmitter<{
 }>
 {
     private host: string;
-    private jwtData?: SuccessfulLoginResponse;
+    private token: string;
     private socket?: WebSocket;
 
     private isShuttingDown: boolean;
     private reconnectTimeoutMs: number;
 
-    constructor()
+    constructor(token: string)
     {
         super();
         this.host = "ws://localhost:4000/v1/ws";
+        this.token = token;
         this.isShuttingDown = false;
         this.reconnectTimeoutMs = 5000;
 
@@ -91,11 +90,7 @@ export class WSDataFeed extends EventEmitter<{
 
     private connect()
     {
-        this.jwtData = useJwtData();
-        if(!this.jwtData)
-            return;
-
-        this.socket = new WebSocket(this.host + `?token=${this.jwtData.accessToken}`);
+        this.socket = new WebSocket(this.host + `?token=${this.token}`);
         this.socket.addEventListener("open", this.onOpen.bind(this));
         this.socket.addEventListener("close", this.onClose.bind(this));
         this.socket.addEventListener("error", this.onError.bind(this));

@@ -1,13 +1,14 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { AccountPageLoaderResponse } from "./loader";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
+import { Credential } from "../../provider/QueriesWithAuthProvider/datatypes";
 import { TextInput } from "../../components/inputs/TextInput";
 import { SubmitInput } from "../../components/inputs/SubmitInput";
-import { Credential, accountCredentialsActivationMutation, accountCredentialsDeletionMutation, accountCredentialsSubmitionMutation } from "../../queries";
 import { CircleSpinner } from "../../components/CircleSpinner";
-import { useMutation } from "@tanstack/react-query";
 
 export interface AccountPageState
 {
@@ -19,10 +20,11 @@ export interface AccountPageState
 
 export function AccountPage()
 {
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
     const { userDataResponse, credentialsResponse } = useLoaderData() as AccountPageLoaderResponse;
-    const addCredentialMutation = useMutation(accountCredentialsSubmitionMutation);
-    const deleteCredentialMutation = useMutation(accountCredentialsDeletionMutation);
-    const activateCredentialMutation = useMutation(accountCredentialsActivationMutation);
+    const addCredentialMutation = useMutation(queryFunctionsWithAuth.submitAccountCredentialsMutation);
+    const deleteCredentialMutation = useMutation(queryFunctionsWithAuth.deleteAccountCredentialMutation);
+    const activateCredentialMutation = useMutation(queryFunctionsWithAuth.activateAccountCredentialMutation);
     const { revalidate } = useRevalidator();
 
     const [state, setState] = useState<AccountPageState>({

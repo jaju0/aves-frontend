@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { positionLiquidationMutation } from "../../queries";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 
 export interface LiquidationFormProps
 {
@@ -10,7 +10,8 @@ export interface LiquidationFormProps
 
 export function LiquidationForm(props: LiquidationFormProps)
 {
-    const liquidatePositionMutation = useMutation(positionLiquidationMutation);
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
+    const liquidatePositionMutation = useMutation(queryFunctionsWithAuth.liquidatePositionMutation);
 
     const formik = useFormik({
         initialValues: {},

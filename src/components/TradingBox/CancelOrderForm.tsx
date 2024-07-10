@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { orderCancelationMutation } from "../../queries";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 
 export interface CancelOrderFormProps
 {
@@ -9,7 +9,8 @@ export interface CancelOrderFormProps
 
 export function CancelOrderForm(props: CancelOrderFormProps)
 {
-    const cancelOrderMutation = useMutation(orderCancelationMutation);
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
+    const cancelOrderMutation = useMutation(queryFunctionsWithAuth.cancelOrderMutation);
 
     const formik = useFormik({
         initialValues: {},

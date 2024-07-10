@@ -2,8 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 import { ChartDataContext, SpreadDataFeedContext, SymbolPairContext } from "../../pages/ChartPage";
-import { orderSubmitionMutation } from "../../queries";
 import { CircleSpinner } from "../CircleSpinner";
 
 export interface OrderSubmitionFormData
@@ -21,10 +21,11 @@ export interface OrderSubmitionFormData
 
 export function OrderSubmitionForm()
 {
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
     const [symbolPair] = useContext(SymbolPairContext);
     const [chartData] = useContext(ChartDataContext);
     const spreadDataFeed = useContext(SpreadDataFeedContext);
-    const submitOrderMutation = useMutation(orderSubmitionMutation);
+    const submitOrderMutation = useMutation(queryFunctionsWithAuth.submitOrderMutation);
     const [pendingSubmition, setPendingSubmition] = useState<boolean>(false);
 
     const formik = useFormik<OrderSubmitionFormData>({

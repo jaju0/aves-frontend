@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ISeriesApi, LineData, Time, WhitespaceData } from "lightweight-charts";
 import { BybitConnectorsContext } from "../../App";
+import { useAuth } from "../../hooks/useAuth";
 import { PairSearchForm } from "../../components/PairSearchForm";
 import { SpreadChart } from "../../components/SpreadChart";
 import { OrderSubmitionForm } from "../../components/OrderSubmitionForm";
@@ -45,6 +46,7 @@ export const SymbolPairContext = createContext<[SymbolPair, React.Dispatch<React
 export function ChartPage()
 {
     const localSymbolPair = JSON.parse(localStorage.getItem("symbolPair") ?? "{}");
+    const [token] = useAuth();
     const queryClient = useQueryClient();
     const bybitConnectors = useContext(BybitConnectorsContext);
     const [symbolPair, setSymbolPair] = useState<SymbolPair>(localSymbolPair);
@@ -69,7 +71,7 @@ export function ChartPage()
     const wsDataFeedRef = useRef<WSDataFeedRef>({
         api() {
             if(!this._api)
-                this._api = new WSDataFeed();
+                this._api = new WSDataFeed(token as string);
             
             return this._api;
         },

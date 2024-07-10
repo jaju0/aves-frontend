@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { orderAmendmentMutation } from "../../queries";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 
 export interface AddOrderStopLossFormData
 {
@@ -15,7 +15,8 @@ export interface AddOrderStopLossProps
 
 export function AddOrderStopLossForm(props: AddOrderStopLossProps)
 {
-    const amendOrderMutation = useMutation(orderAmendmentMutation);
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
+    const amendOrderMutation = useMutation(queryFunctionsWithAuth.amendOrderMutation);
 
     const formik = useFormik<AddOrderStopLossFormData>({
         initialValues: {

@@ -1,11 +1,11 @@
 import { QueryClient } from "@tanstack/react-query";
-import { accountCredentialsQuery, userDataQuery } from "../../queries";
+import { QueryFunctionsWithAuth } from "../../provider/QueriesWithAuthProvider";
 
-export async function accountPageLoader(queryClient: QueryClient)
+export async function accountPageLoader(queryClient: QueryClient, queryFunctionsWithAuth: QueryFunctionsWithAuth)
 {
     return {
-        userDataResponse: await queryClient.fetchQuery(userDataQuery),
-        credentialsResponse: await queryClient.fetchQuery(accountCredentialsQuery),
+        userDataResponse: await queryClient.fetchQuery(queryFunctionsWithAuth.userDataQuery),
+        credentialsResponse: await queryClient.fetchQuery(queryFunctionsWithAuth.accountCredentialsQuery),
     };
 }
 

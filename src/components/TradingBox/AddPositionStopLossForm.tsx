@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { positionAmendmentMutation } from "../../queries";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 
 export interface AddPositionStopLossFormData
 {
@@ -16,7 +16,8 @@ export interface AddPositionStopLossFormProps
 
 export function AddPositionStopLossForm(props: AddPositionStopLossFormProps)
 {
-    const amendPositionMutation = useMutation(positionAmendmentMutation);
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
+    const amendPositionMutation = useMutation(queryFunctionsWithAuth.amendPositionMutation);
 
     const formik = useFormik({
         initialValues: {

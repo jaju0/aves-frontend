@@ -3,11 +3,12 @@ import { useLoaderData, useRevalidator } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { UserData, UserRank, userRank } from "../../provider/QueriesWithAuthProvider/datatypes";
 import { UsersPageLoaderResponse } from "./loader";
-import { UserData, UserRank, userAmendmentMutation, userCreationMutation, userDeletionMutation, userRank } from "../../queries";
 import { SubmitInput } from "../../components/inputs/SubmitInput";
 import { EmailInput } from "../../components/inputs/EmailInput";
 import { CircleSpinner } from "../../components/CircleSpinner";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 
 export interface UserFormData
 {
@@ -32,10 +33,11 @@ export interface UserAmendmentData
 
 export function UsersPage()
 {
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
     const { userDataResponse, usersListDataResponse } = useLoaderData() as UsersPageLoaderResponse;
-    const createUserMutation = useMutation(userCreationMutation);
-    const amendUserMutation = useMutation(userAmendmentMutation);
-    const deleteUserMutation = useMutation(userDeletionMutation);
+    const createUserMutation = useMutation(queryFunctionsWithAuth.createUserMutation);
+    const amendUserMutation = useMutation(queryFunctionsWithAuth.amendUserMutation);
+    const deleteUserMutation = useMutation(queryFunctionsWithAuth.deleteUserMutation);
     const userAmendmentDataRef = useRef<UserAmendmentData>();
     const { revalidate } = useRevalidator();
 
@@ -152,7 +154,7 @@ export function UsersPage()
             };
         }
 
-        userAmendmentDataRef.current.rank = ev.currentTarget.value;
+        userAmendmentDataRef.current.rank = ev.currentTarget.value as UserRank;
     }
 
     return (
@@ -172,7 +174,7 @@ export function UsersPage()
                             </thead>
                             <tbody>
                                 { usersListDataResponse?.map(user => (
-                                    <tr>
+                                    <tr key={user.id}>
                                         <td>{user.email}</td>
                                         <td>
                                             { state.isChangeModeActivated && state.user?.email === user.email &&

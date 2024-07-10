@@ -5,7 +5,7 @@ import { ChartContainerContext } from "../Chart/ChartContainer";
 import { LineSeriesContext } from "../Series";
 import { SpreadDataFeedContext, SymbolPairContext, WSDataFeedContext } from "../../pages/ChartPage";
 import { OrderEventData, PositionEventData, WebsocketEvent } from "../../WSDataFeed";
-import { orderAmendmentMutation, orderCancelationMutation, orderListQuery, positionAmendmentMutation, positionLiquidationMutation, positionListQuery } from "../../queries";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 
 export interface ChartTradingContextRef
 {
@@ -25,15 +25,16 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
 {
     const { children } = props;
     const queryClient = useQueryClient();
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
     const chart = useContext(ChartContainerContext);
     const parent = useContext(LineSeriesContext);
     const [symbolPair] = useContext(SymbolPairContext);
     const wsDataFeed = useContext(WSDataFeedContext);
     const spreadDataFeed = useContext(SpreadDataFeedContext);
-    const liquidatePositionMutation = useMutation(positionLiquidationMutation);
-    const amendPositionMutation = useMutation(positionAmendmentMutation);
-    const cancelOrderMutation = useMutation(orderCancelationMutation);
-    const amendOrderMutation = useMutation(orderAmendmentMutation);
+    const liquidatePositionMutation = useMutation(queryFunctionsWithAuth.liquidatePositionMutation);
+    const amendPositionMutation = useMutation(queryFunctionsWithAuth.amendPositionMutation);
+    const cancelOrderMutation = useMutation(queryFunctionsWithAuth.cancelOrderMutation);
+    const amendOrderMutation = useMutation(queryFunctionsWithAuth.amendOrderMutation);
 
     const context = useRef<ChartTradingContextRef>({
         api() {
@@ -116,7 +117,7 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
         wsDataFeed?.on("order", orderListener);
         wsDataFeed?.on("position", positionListener);
 
-        queryClient.fetchQuery(orderListQuery).then(orders => {
+        queryClient.fetchQuery(queryFunctionsWithAuth.orderListQuery).then(orders => {
             orders?.forEach(order => {
                 if(order.symbol1 !== symbolPair.symbol1 || order.symbol2 !== symbolPair.symbol2)
                     return;
@@ -128,7 +129,7 @@ export const ChartTrading = forwardRef<ChartTradingPrimitive, ChartTradingProps>
             });
         });
 
-        queryClient.fetchQuery(positionListQuery).then(positions => {
+        queryClient.fetchQuery(queryFunctionsWithAuth.positionListQuery).then(positions => {
             positions?.forEach(position => {
                 if(position.symbol1 !== symbolPair.symbol1 || position.symbol2 !== symbolPair.symbol2)
                     return;

@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import Scrollbars from "react-custom-scrollbars-2";
 import colors from "tailwindcss/colors";
+import { OrderData } from "../../provider/QueriesWithAuthProvider/datatypes";
+import { useQueryFunctionsWithAuth } from "../../hooks/useQueryFunctionsWithAuth";
 import { WSDataFeedContext } from "../../pages/ChartPage";
-import { OrderData, orderListQuery } from "../../queries";
 import { OrderEventData, WebsocketEvent } from "../../WSDataFeed";
 import { CircleSpinner } from "../CircleSpinner";
 import { CancelOrderForm } from "./CancelOrderForm";
@@ -11,6 +13,8 @@ import { AddOrderTakeProfitForm } from "./AddOrderTakeProfitForm";
 
 export function OpenOrdersTab()
 {
+    const queryClient = useQueryClient();
+    const queryFunctionsWithAuth = useQueryFunctionsWithAuth();
     const wsDataFeed = useContext(WSDataFeedContext);
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -39,7 +43,7 @@ export function OpenOrdersTab()
         wsDataFeed?.on("order", orderListener);
 
         setIsLoading(true);
-        orderListQuery.queryFn().then(data => {
+        queryClient.fetchQuery(queryFunctionsWithAuth.orderListQuery).then(data => {
             if(data)
             {
                 setOrdersMap(last => new Map([

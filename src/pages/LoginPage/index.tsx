@@ -3,13 +3,14 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { useMutation } from "@tanstack/react-query";
 import logo from "../../assets/images/logo-lg.png";
-import { googleAuthMutation } from "../../queries";
-import { useJwtData } from "../../hooks/useJwtData";
+import { useAuth } from "../../hooks/useAuth";
+import { useQueryFunctionsWithoutAuth } from "../../hooks/useQueryFunctionsWithoutAuth";
 
 export function LoginPage()
 {
-    const googleAuthMutationResult = useMutation(googleAuthMutation);
-    const jwtData = useJwtData();
+    const [token, setToken] = useAuth();
+    const queryFunctionsWithoutAuth = useQueryFunctionsWithoutAuth();
+    const googleAuthMutationResult = useMutation(queryFunctionsWithoutAuth.googleAuthMutation);
     const navigate = useNavigate();
     const [idToken, setIdToken] = useState<string | null>(null);
 
@@ -21,14 +22,13 @@ export function LoginPage()
             if(!jwtData)
                 return;
 
-            localStorage.setItem("jwt", JSON.stringify(jwtData));
-            navigate("/chart");
-            location.reload();
+            setToken(jwtData.accessToken);
+            navigate("/", { replace: true });
         });
     }, [idToken]);
 
-    if(jwtData)
-        return <Navigate to="/chart" />;
+    if(token)
+        return <Navigate to="/" />;
 
     return (
         <div className="inline-block w-fit h-screen m-auto flex flex-col justify-center">
