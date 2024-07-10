@@ -16,6 +16,7 @@ export interface SymbolPair
     symbol1: string;
     symbol2: string;
     interval: KlineIntervalV3;
+    isValid: boolean;
 }
 
 export interface ChartData

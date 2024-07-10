@@ -5,6 +5,7 @@ import { ChartDataContext, SpreadDataFeedContext, SymbolPairContext } from "../.
 import { Chart } from "../Chart";
 import { LineSeries } from "../Series";
 import { ChartTrading } from "../ChartTrading";
+import eagleSweetIcon from "../../assets/images/eagle-sweet.png";
 
 export interface SpreadChartProps
 {
@@ -18,10 +19,7 @@ export function SpreadChart(props: SpreadChartProps)
     const spreadDataFeed = useContext(SpreadDataFeedContext);
 
     useEffect(() => {
-        if(
-            symbolPair.symbol1 === undefined || symbolPair.symbol2 === undefined ||
-            symbolPair.symbol1 === "" || symbolPair.symbol2 === ""
-        )
+        if(!symbolPair.isValid)
             return;
 
         setChartData(undefined);
@@ -35,47 +33,59 @@ export function SpreadChart(props: SpreadChartProps)
                 <div className="text-center">
                     <span className="px-3 bg-gray-900 px-3 py-1 rounded-full">
                         <span className="text-yellow-500">T-Statistic: </span>
-                        { chartData && chartData.statistics &&
+                        { chartData && chartData.statistics && symbolPair.isValid &&
                             <span className="text-teal-500">{chartData.statistics.tstat.toFixed(4)}</span>
                         }
-                        { !chartData &&
+                        { !chartData && symbolPair.isValid &&
                             <span className="inline-block bg-gray-400 text-gray-400 rounded-full animate-pulse">0.0000</span>
+                        }
+                        { !symbolPair.isValid &&
+                            <span className="inline-block text-teal-500">-</span>
                         }
                     </span>
                     <span className="px-3">-</span>
                     <span className="px-3 bg-gray-900 px-3 py-1 rounded-full">
                         <span className="text-yellow-500">Lag: </span>
-                        { chartData && chartData.statistics &&
+                        { chartData && chartData.statistics && symbolPair.isValid &&
                             <span className="text-teal-500">{chartData.statistics.usedLag.toFixed(4)}</span>
                         }
-                        { !chartData &&
+                        { !chartData && symbolPair.isValid &&
                             <span className="inline-block bg-gray-400 text-gray-400 rounded-full animate-pulse">0.0000</span>
+                        }
+                        { !symbolPair.isValid &&
+                            <span className="inline-block text-teal-500">-</span>
                         }
                     </span>
                     <span className="px-3">-</span>
                     <span className="px-3 bg-gray-900 px-3 py-1 rounded-full">
                         <span className="text-yellow-500">Half Life: </span>
-                        { chartData && chartData.statistics &&
+                        { chartData && chartData.statistics && symbolPair.isValid &&
                             <span className="text-teal-500">{chartData.statistics.halfLife.toFixed(4)}</span>
                         }
-                        { !chartData &&
+                        { !chartData && symbolPair.isValid &&
                             <span className="inline-block bg-gray-400 text-gray-400 rounded-full animate-pulse">0.0000</span>
+                        }
+                        { !symbolPair.isValid &&
+                            <span className="inline-block text-teal-500">-</span>
                         }
                     </span>
                     <span className="px-3">-</span>
                     <span className="px-3 bg-gray-900 px-3 py-1 rounded-full">
                         <span className="text-yellow-500">Hedge Ratio: </span>
-                        { chartData && chartData.statistics &&
+                        { chartData && chartData.statistics && symbolPair.isValid &&
                             <span className="text-teal-500">{chartData.statistics.hedgeRatio.toFixed(4)}</span>
                         }
-                        { !chartData &&
+                        { !chartData && symbolPair.isValid &&
                             <span className="inline-block bg-gray-400 text-gray-400 rounded-full animate-pulse">0.0000</span>
+                        }
+                        { !symbolPair.isValid &&
+                            <span className="inline-block text-teal-500">-</span>
                         }
                     </span>
                 </div>
             </div>
             <div className="row-span-11">
-                { chartData &&
+                { chartData && symbolPair.isValid &&
                     <Chart
                         timeScale={{
                             timeVisible: true,
@@ -107,8 +117,18 @@ export function SpreadChart(props: SpreadChartProps)
                         </LineSeries>
                     </Chart>
                 }
-                { !chartData &&
+                { !chartData && symbolPair.isValid &&
                     <div className="w-full h-full bg-zinc-900 animate-pulse">
+                    </div>
+                }
+                { !symbolPair.isValid &&
+                    <div className="flex flex-col justify-center w-full h-full text-center border-2 border-zinc-800">
+                        <div className="w-32 mx-auto p-3 bg-zinc-800 rounded-full">
+                            <img className="w-full" alt="eagle-sweet" src={eagleSweetIcon} />
+                        </div>
+                        <p className="my-2 px-4 py-2 font-semibold text-md">
+                            <span className="bg-zinc-800 px-4 py-2 text-white rounded-full">No valid symbols selected.</span>
+                        </p>
                     </div>
                 }
             </div>

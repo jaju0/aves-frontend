@@ -37,24 +37,28 @@ export function PairSearchForm()
             if(values.symbol1 === values.symbol2)
                 return;
 
+            let isSymbol1Valid = false;
             if(values.symbol1)
             {
                 const foundInstInfo = instrumentsInfoQuery.data?.result.list.find(instrumentInfo => instrumentInfo.symbol === values.symbol1);
-                if(!foundInstInfo)
-                    return;
+                if(foundInstInfo)
+                    isSymbol1Valid = true;
             }
 
+            let isSymbol2Valid = false;
             if(values.symbol2)
             {
                 const foundInstInfo = instrumentsInfoQuery.data?.result.list.find(instrumentInfo => instrumentInfo.symbol === values.symbol2);
-                if(!foundInstInfo)
-                    return;
+                if(foundInstInfo)
+                    isSymbol2Valid = true;
             }
 
-            if(!klineIntervalSet.has(values.interval))
-                return;
+            let isIntervalValid = klineIntervalSet.has(values.interval);
 
-            setSymbolPair(values);
+            setSymbolPair({
+                ...values,
+                isValid: isSymbol1Valid && isSymbol2Valid && isIntervalValid,
+            });
         },
     });
 
