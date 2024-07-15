@@ -46,9 +46,11 @@ export function OpenOrdersTab()
         queryClient.fetchQuery(queryFunctionsWithAuth.orderListQuery).then(data => {
             if(data)
             {
+                const openOrdersData = data.filter(entry => entry.status !== "Executed" && entry.status !== "Failed");
+
                 setOrdersMap(last => new Map([
                     ...Array.from(last.entries()),
-                    ...(data.map(entry => [entry.id, entry]) as [string, OrderData][]),
+                    ...(openOrdersData.map(entry => [entry.id, entry]) as [string, OrderData][]),
                 ]));
             }
 
