@@ -154,3 +154,31 @@ export const amendPositionMutation = (axiosInst: AxiosInstance) => ({
         }
     }
 });
+
+export const startPairFinderMutation = (axiosInst: AxiosInstance) => ({
+    mutationFn: async () => {
+        try
+        {
+            const response = await axiosInst.post("/pair-finder/start");
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+});
+
+export const stopPairFinderMutation = (axiosInst: AxiosInstance) => ({
+    mutationFn: async () => {
+        try
+        {
+            const response = await axiosInst.post("/pair-finder/stop");
+            return response.data;
+        }
+        catch(error)
+        {
+            return null;
+        }
+    }
+});

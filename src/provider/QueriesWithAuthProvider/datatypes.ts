@@ -1,3 +1,5 @@
+import { KlineIntervalV3 } from "bybit-api";
+
 export const userRank = ["ADMIN", "USER", "NONE"] as const;
 export type UserRank = typeof userRank[number];
 
@@ -60,6 +62,19 @@ export interface PositionData
     takeProfit?: string;
     stopLoss?: string;
     open: boolean;
+}
+
+export interface PairData
+{
+    id: string;
+    created_at: Date;
+    symbol1: string;
+    symbol2: string;
+    interval: KlineIntervalV3;
+    slope: number;
+    tstat: number;
+    lag: number;
+    half_life: number;
 }
 
 export interface SubmitAccountCredentialsRequestBody
@@ -141,3 +156,8 @@ export interface CredentialsResponse
 
 export type UserDataResponse = UserData;
 export type UserListResponse = UserData[];
+
+export interface PairFinderStatusResponse
+{
+    isRunning: boolean;
+}

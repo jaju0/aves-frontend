@@ -45,6 +45,7 @@ export function ProtectedRoute()
                 </a>
                 <ul className="flex gap-5">
                     <li className="flex items-center"><NavLink to="/chart" href="/chart" className={`transition ease-in-out hover:text-zinc-300`}>Chart</NavLink></li>
+                    <li className="flex items-center"><NavLink to="/pairs" href="/pairs" className={`transition ease-in-out hover:text-zinc-300`}>Pairs</NavLink></li>
                     <li className="flex items-center"><NavLink to="/account" href="/account" className={`transition ease-in-out hover:text-zinc-300`}>Account</NavLink></li>
                     <li className="flex items-center"><NavLink to="/users" href="/users" className={`transition ease-in-out hover:text-zinc-300`}>Users</NavLink></li>
                 </ul>

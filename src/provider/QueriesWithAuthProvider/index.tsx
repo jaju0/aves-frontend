@@ -1,8 +1,8 @@
 import { createContext, ReactNode, useMemo } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import axios, { AxiosInstance, CreateAxiosDefaults } from "axios";
-import { activateAccountCredentialMutation, amendOrderMutation, amendPositionMutation, amendUserMutation, cancelOrderMutation, createUserMutation, deleteAccountCredentialMutation, deleteUserMutation, liquidatePositionMutation, submitAccountCredentialsMutation, submitOrderMutation } from "./mutations";
-import { accountCredentialsQuery, orderListQuery, positionListQuery, userDataQuery, userListQuery } from "./queries";
+import { activateAccountCredentialMutation, amendOrderMutation, amendPositionMutation, amendUserMutation, cancelOrderMutation, createUserMutation, deleteAccountCredentialMutation, deleteUserMutation, liquidatePositionMutation, startPairFinderMutation, stopPairFinderMutation, submitAccountCredentialsMutation, submitOrderMutation } from "./mutations";
+import { accountCredentialsQuery, orderListQuery, pairFinderStatusQuery, pairListQuery, positionListQuery, userDataQuery, userListQuery } from "./queries";
 
 const setup = (axiosInst: AxiosInstance) => ({
     accountCredentialsQuery: accountCredentialsQuery(axiosInst),
@@ -10,6 +10,8 @@ const setup = (axiosInst: AxiosInstance) => ({
     userListQuery: userListQuery(axiosInst),
     orderListQuery: orderListQuery(axiosInst),
     positionListQuery: positionListQuery(axiosInst),
+    pairListQuery: pairListQuery(axiosInst),
+    pairFinderStatusQuery: pairFinderStatusQuery(axiosInst),
     submitAccountCredentialsMutation: submitAccountCredentialsMutation(axiosInst),
     activateAccountCredentialMutation: activateAccountCredentialMutation(axiosInst),
     deleteAccountCredentialMutation: deleteAccountCredentialMutation(axiosInst),
@@ -21,6 +23,8 @@ const setup = (axiosInst: AxiosInstance) => ({
     cancelOrderMutation: cancelOrderMutation(axiosInst),
     liquidatePositionMutation: liquidatePositionMutation(axiosInst),
     amendPositionMutation: amendPositionMutation(axiosInst),
+    startPairFinderMutation: startPairFinderMutation(axiosInst),
+    stopPairFinderMutation: stopPairFinderMutation(axiosInst),
 });
 
 export type QueryFunctionsWithAuth = ReturnType<typeof setup>;

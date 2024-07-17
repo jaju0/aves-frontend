@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { LoginPage } from "../pages/LoginPage";
 import { ProtectedRoute } from "../pages/ProtectedRoute";
 import { ChartPage } from "../pages/ChartPage";
+import { PairsPage } from "../pages/PairsPage";
 import { AccountPage } from "../pages/AccountPage";
 import { accountPageLoader } from "../pages/AccountPage/loader";
 import { UsersPage } from "../pages/UsersPage";
@@ -32,6 +33,10 @@ export function Routes()
                 {
                     path: "/chart",
                     element: <ChartPage />,
+                },
+                {
+                    path: "/pairs",
+                    element: <PairsPage />,
                 },
                 {
                     path: "/account",
