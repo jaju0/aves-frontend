@@ -1,11 +1,8 @@
 import { KlineIntervalV3 } from "bybit-api";
 import { useContext } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { bybitInstrumentInfoQuery } from "../../queries";
-import { BybitConnectorsContext } from "../../App";
-import { SymbolPairContext } from "../../pages/ChartPage";
+import { InstrumentsInfoContext, SymbolPairContext } from "../../pages/ChartPage";
 
 export interface PairSearchFormData
 {
@@ -20,9 +17,8 @@ const klineIntervalSet = new Set([
 
 export function PairSearchForm()
 {
-    const bybitConnectors = useContext(BybitConnectorsContext);
     const [symbolPair, setSymbolPair] = useContext(SymbolPairContext);
-    const instrumentsInfoQuery = useQuery(bybitInstrumentInfoQuery(bybitConnectors.restClient));
+    const [instrumentsInfoQuery, instrumentsInfo] = useContext(InstrumentsInfoContext);
 
     const formik = useFormik<PairSearchFormData>({
         initialValues: symbolPair,
@@ -40,7 +36,7 @@ export function PairSearchForm()
             let isSymbol1Valid = false;
             if(values.symbol1)
             {
-                const foundInstInfo = instrumentsInfoQuery.data?.result.list.find(instrumentInfo => instrumentInfo.symbol === values.symbol1);
+                const foundInstInfo = instrumentsInfo.get(values.symbol1);
                 if(foundInstInfo)
                     isSymbol1Valid = true;
             }
@@ -48,7 +44,7 @@ export function PairSearchForm()
             let isSymbol2Valid = false;
             if(values.symbol2)
             {
-                const foundInstInfo = instrumentsInfoQuery.data?.result.list.find(instrumentInfo => instrumentInfo.symbol === values.symbol2);
+                const foundInstInfo = instrumentsInfo.get(values.symbol2);
                 if(foundInstInfo)
                     isSymbol2Valid = true;
             }

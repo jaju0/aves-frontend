@@ -1,7 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import colors from "tailwindcss/colors";
-import { ISeriesApi } from "lightweight-charts";
-import { ChartDataContext, SpreadDataFeedContext, SymbolPairContext } from "../../pages/ChartPage";
+import { DeepPartial, ISeriesApi, PriceFormat } from "lightweight-charts";
+import { ChartDataContext, InstrumentsInfoContext, SpreadDataFeedContext, SymbolPairContext } from "../../pages/ChartPage";
 import { Chart } from "../Chart";
 import { LineSeries } from "../Series";
 import { ChartTrading } from "../ChartTrading";
@@ -15,8 +15,12 @@ export interface SpreadChartProps
 export function SpreadChart(props: SpreadChartProps)
 {
     const [symbolPair] = useContext(SymbolPairContext);
+    const [instrumentsInfoQuery, instrumentsInfo] = useContext(InstrumentsInfoContext);
     const [chartData, setChartData] = useContext(ChartDataContext);
+    const [priceFormat, setPriceFormat] = useState<DeepPartial<PriceFormat> | undefined>();
     const spreadDataFeed = useContext(SpreadDataFeedContext);
+
+    instrumentsInfoQuery; // ignore unused
 
     useEffect(() => {
         if(!symbolPair.isValid)
@@ -26,6 +30,31 @@ export function SpreadChart(props: SpreadChartProps)
 
         spreadDataFeed?.reset(symbolPair.interval, symbolPair.symbol1, symbolPair.symbol2);
     }, [symbolPair]);
+
+    useEffect(() => {
+        const instInfo = instrumentsInfo.get(symbolPair.symbol1);
+        if(!instInfo)
+            return;
+
+        let precision: number | undefined;
+        {
+            const priceParts = instInfo.priceFilter.tickSize.split(".");
+            if(priceParts.length < 2)
+                precision = undefined;
+
+            precision = priceParts[1].length;
+        }
+
+        const newPriceFormat: DeepPartial<PriceFormat> = {
+            type: "price",
+            precision,
+            minMove: +instInfo.priceFilter.tickSize,
+        };
+
+        const lineSeries = props.residualsLineSeriesRef.current;
+        lineSeries?.applyOptions({ priceFormat: newPriceFormat });
+        setPriceFormat(newPriceFormat);
+    }, [instrumentsInfo, symbolPair]);
 
     return (
         <div className="grid grid-rows-12 grid-cols-1 w-full h-full">
@@ -112,6 +141,7 @@ export function SpreadChart(props: SpreadChartProps)
                             data={chartData?.initialResidualData}
                             color={colors.sky[500]}
                             lineWidth={1}
+                            priceFormat={priceFormat}
                         >
                             <ChartTrading />
                         </LineSeries>

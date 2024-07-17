@@ -1,6 +1,6 @@
-import { KlineIntervalV3 } from "bybit-api";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { APIResponseV3WithTime, InstrumentInfoResponseV5, KlineIntervalV3, LinearInverseInstrumentInfoV5 } from "bybit-api";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { ISeriesApi, LineData, Time, WhitespaceData } from "lightweight-charts";
 import { BybitConnectorsContext } from "../../App";
 import { useAuth } from "../../hooks/useAuth";
@@ -10,6 +10,7 @@ import { OrderSubmitionForm } from "../../components/OrderSubmitionForm";
 import { TradingBox } from "../../components/TradingBox";
 import { SpreadDataFeed, SpreadDataStatistics } from "../../SpreadDataFeed";
 import { WSDataFeed } from "../../WSDataFeed";
+import { bybitInstrumentInfoQuery } from "../../queries";
 
 export interface SymbolPair
 {
@@ -43,6 +44,7 @@ export const SpreadDataFeedContext = createContext<SpreadDataFeed | undefined>(u
 export const WSDataFeedContext = createContext<WSDataFeed | undefined>(undefined);
 export const ChartDataContext = createContext<[ChartData | undefined, React.Dispatch<React.SetStateAction<ChartData | undefined>>]>({} as [ChartData | undefined, React.Dispatch<React.SetStateAction<ChartData | undefined>>]);
 export const SymbolPairContext = createContext<[SymbolPair, React.Dispatch<React.SetStateAction<SymbolPair>>]>({} as [SymbolPair, React.Dispatch<React.SetStateAction<SymbolPair>>]);
+export const InstrumentsInfoContext = createContext<[UseQueryResult<APIResponseV3WithTime<InstrumentInfoResponseV5<"linear">>, Error>, Map<string, LinearInverseInstrumentInfoV5>]>({} as [UseQueryResult<APIResponseV3WithTime<InstrumentInfoResponseV5<"linear">>, Error>, Map<string, LinearInverseInstrumentInfoV5>]);
 
 export function ChartPage()
 {
@@ -50,6 +52,7 @@ export function ChartPage()
     const [token] = useAuth();
     const queryClient = useQueryClient();
     const bybitConnectors = useContext(BybitConnectorsContext);
+    const instrumentsInfoQuery = useQuery(bybitInstrumentInfoQuery(bybitConnectors.restClient));
     const [symbolPair, setSymbolPair] = useState<SymbolPair>(localSymbolPair);
     const [chartData, setChartData] = useState<ChartData>();
     const [spreadDataFeed, setSpreadDataFeed] = useState<SpreadDataFeed>();
@@ -118,31 +121,42 @@ export function ChartPage()
         localStorage.setItem("symbolPair", JSON.stringify(symbolPair));
     }, [symbolPair]);
 
+    const instrumentsInfo = useMemo(() => {
+        const data = instrumentsInfoQuery.data;
+
+        if(data && data.result && data.result.list)
+            return new Map(data.result.list.map(instrumentInfo => [instrumentInfo.symbol, instrumentInfo]));
+
+        return new Map<string, LinearInverseInstrumentInfoV5>();
+    }, [instrumentsInfoQuery.data]);
+
     return (
-        <SymbolPairContext.Provider value={[symbolPair, setSymbolPair]}>
-            <SpreadDataFeedContext.Provider value={spreadDataFeed}>
-                <WSDataFeedContext.Provider value={wsDataFeed}>
-                    <ChartDataContext.Provider value={[chartData, setChartData]}>
-                        <div className="h-full">
-                            <div className="h-full grid grid-rows-12 grid-cols-4 gap-1 px-5">
-                                <div className="row-span-1 col-span-4">
-                                    <PairSearchForm />
+        <InstrumentsInfoContext.Provider value={[instrumentsInfoQuery, instrumentsInfo]}>
+            <SymbolPairContext.Provider value={[symbolPair, setSymbolPair]}>
+                <SpreadDataFeedContext.Provider value={spreadDataFeed}>
+                    <WSDataFeedContext.Provider value={wsDataFeed}>
+                        <ChartDataContext.Provider value={[chartData, setChartData]}>
+                            <div className="h-full">
+                                <div className="h-full grid grid-rows-12 grid-cols-4 gap-1 px-5">
+                                    <div className="row-span-1 col-span-4">
+                                        <PairSearchForm />
+                                    </div>
+                                    <div className="row-span-11 col-span-3">
+                                        <SpreadChart residualsLineSeriesRef={residualsLineSeriesRef} />
+                                    </div>
+                                    <div className="row-span-11">
+                                        <OrderSubmitionForm />
+                                    </div>
                                 </div>
-                                <div className="row-span-11 col-span-3">
-                                    <SpreadChart residualsLineSeriesRef={residualsLineSeriesRef} />
-                                </div>
-                                <div className="row-span-11">
-                                    <OrderSubmitionForm />
+                                <div className="w-full">
+                                    <TradingBox />
                                 </div>
                             </div>
-                            <div className="w-full">
-                                <TradingBox />
-                            </div>
-                        </div>
-                    </ChartDataContext.Provider>
-                </WSDataFeedContext.Provider>
-            </SpreadDataFeedContext.Provider>
-        </SymbolPairContext.Provider>
+                        </ChartDataContext.Provider>
+                    </WSDataFeedContext.Provider>
+                </SpreadDataFeedContext.Provider>
+            </SymbolPairContext.Provider>
+        </InstrumentsInfoContext.Provider>
     );
 }
 
