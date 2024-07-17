@@ -73,7 +73,7 @@ export class WSDataFeed extends EventEmitter<{
     constructor(token: string)
     {
         super();
-        this.host = "ws://localhost:4000/v1/ws";
+        this.host = `ws://${import.meta.env.VITE_API_URL}:4000/v1/ws`;
         this.token = token;
         this.isShuttingDown = false;
         this.reconnectTimeoutMs = 5000;
