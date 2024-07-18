@@ -20,7 +20,7 @@ export function QueriesWithoutAuthProvider(props: QueriesWithoutAuthProvider)
 {
     const functions = useMemo(() => {
         const config: CreateAxiosDefaults = {};
-        config.baseURL = `http://${import.meta.env.VITE_API_HOST}/v1`;
+        config.baseURL = `http${import.meta.env.VITE_USE_SSL === "true" ? "s" : ""}://${import.meta.env.VITE_API_HOST}/v1`;
         config.withCredentials = true;
 
         const axiosInstance = axios.create(config);
