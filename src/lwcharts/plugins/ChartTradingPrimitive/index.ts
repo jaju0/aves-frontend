@@ -168,7 +168,8 @@ export class ChartTradingPrimitive extends EventEmitter<{
                 this.chartObjects.set(slMoveObject.Id, slMoveObject);
             }
 
-            this.orders.set(orderId, {
+            const order = this.orders.get(orderId);
+            const newOrder: ChartOrder = {
                 data,
                 entryCloseObject: entryCloseObject,
                 entryMoveObject: entryMoveObject,
@@ -176,8 +177,13 @@ export class ChartTradingPrimitive extends EventEmitter<{
                 takeProfitMoveObject: tpMoveObject,
                 stopLossCloseObject: slCloseObject,
                 stopLossMoveObject: slMoveObject,
-                focused: false,
-            });
+                focused: order?.focused ?? false,
+            };
+
+            if(order)
+                Object.assign(order, newOrder);
+            else
+                this.orders.set(orderId, newOrder);
         }
         else if(tradingEvent.topic === "position")
         {
@@ -215,15 +221,21 @@ export class ChartTradingPrimitive extends EventEmitter<{
                 this.chartObjects.set(slMoveObject.Id, slMoveObject);
             }
 
-            this.positions.set(positionId, {
+            const position = this.positions.get(positionId);
+            const newPosition: ChartPosition = {
                 data,
                 closeObject,
                 takeProfitCloseObject: tpCloseObject,
                 takeProfitMoveObject: tpMoveObject,
                 stopLossCloseObject: slCloseObject,
                 stopLossMoveObject: slMoveObject,
-                focused: false,
-            });
+                focused: position?.focused ?? false,
+            };
+
+            if(position)
+                Object.assign(position, newPosition);
+            else
+                this.positions.set(positionId, newPosition);
         }
     }
 
