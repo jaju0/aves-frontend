@@ -4,6 +4,7 @@ import colors from "tailwindcss/colors";
 import { Rectangle } from "../../helpers/dimensions/common";
 import { ChartOrder } from ".";
 import { ChartObject } from "./ChartObject";
+import { SpreadDataFeed } from "../../../SpreadDataFeed";
 
 export const lineType = ["entry", "stop_loss", "take_profit"] as const;
 export type LineType = typeof lineType[number];
@@ -21,6 +22,7 @@ export const chartOrderColors = {
 
 export interface OrderPaneViewParams
 {
+    spreadDataFeed: SpreadDataFeed;
     series: ISeriesApi<keyof SeriesOptionsMap>;
     orders: Map<string, ChartOrder>;
     infoShieldMarginLeft: number;
@@ -203,17 +205,20 @@ export class OrderPaneRenderer implements ISeriesPrimitivePaneRenderer
 
     private renderOrder(ctx: CanvasRenderingContext2D, mediaSize: Size, order: ChartOrder)
     {
+        const statistics = this.params.spreadDataFeed.getStatistics();
+        if(statistics === undefined)
+            return;
+
         if(order.data.symbol1EntryPrice === undefined || order.data.symbol2EntryPrice === undefined)
             return;
 
         const symbol1EntryPrice = +order.data.symbol1EntryPrice;
         const symbol2EntryPrice = +order.data.symbol2EntryPrice;
-        const slope = +order.data.regressionSlope;
 
-        const entryResidual = symbol1EntryPrice - slope * symbol2EntryPrice;
+        const entryResidual = symbol1EntryPrice - statistics.hedgeRatio * symbol2EntryPrice;
         let amendedEntryResidual: number | undefined = undefined;
         if(order.amendedSymbol1EntryPrice !== undefined && order.amendedSymbol2EntryPrice !== undefined)
-            amendedEntryResidual = order.amendedSymbol1EntryPrice - slope * order.amendedSymbol2EntryPrice;
+            amendedEntryResidual = order.amendedSymbol1EntryPrice - statistics.hedgeRatio * order.amendedSymbol2EntryPrice;
 
         const entry = amendedEntryResidual ?? entryResidual;
         const takeProfit = order.data.takeProfit ? entry + (+order.data.takeProfit) : undefined;

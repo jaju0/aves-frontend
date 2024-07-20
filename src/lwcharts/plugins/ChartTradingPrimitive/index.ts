@@ -103,6 +103,7 @@ export class ChartTradingPrimitive extends EventEmitter<{
         this.chartObjects = new Map();
 
         this.orderPaneView = new OrderPaneView({
+            spreadDataFeed,
             series: this.series,
             orders: this.orders,
             infoShieldMarginLeft: 30,

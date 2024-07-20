@@ -84,11 +84,8 @@ export function OrderSubmitionForm()
             const entryResidual = values.entry === "" ? symbol1LatestPrice - slope * symbol2LatestPrice : +values.entry;
             const symbol1Price = entryResidual === undefined ? undefined : slope * symbol2LatestPrice + +values.entry;
 
-            const takeProfitResidual = values.takeProfit === "" ? undefined : +values.takeProfit;
-            const stopLossResidual = values.stopLoss === "" ? undefined : +values.stopLoss;
-
-            const takeProfit = takeProfitResidual !== undefined ? takeProfitResidual - entryResidual : undefined;
-            const stopLoss = stopLossResidual !== undefined ? stopLossResidual - entryResidual : undefined;
+            const takeProfit = values.takeProfit === "" ? undefined : +values.takeProfit;
+            const stopLoss = values.stopLoss === "" ? undefined : +values.stopLoss;
 
             setPendingSubmition(true);
 
