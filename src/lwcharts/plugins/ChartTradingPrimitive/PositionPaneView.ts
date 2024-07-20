@@ -308,25 +308,26 @@ export class PositionPaneRenderer implements ISeriesPrimitivePaneRenderer
         if(statistics === undefined)
             return;
 
-        const regressionSlope = +position.data.regressionSlope;
         const symbol1EntryPrice = +position.data.symbol1EntryPrice;
         const symbol2EntryPrice = +position.data.symbol2EntryPrice;
         const positionStopLoss = position.data.stopLoss === undefined ? undefined : +position.data.stopLoss;
         const positionTakeProfit = position.data.takeProfit === undefined ? undefined : +position.data.takeProfit;
 
         const entryResidual = symbol1EntryPrice - statistics.hedgeRatio * symbol2EntryPrice;
-        const errorAdjustedStopLoss = positionStopLoss === undefined ? undefined : (regressionSlope * symbol2EntryPrice + positionStopLoss) - statistics.hedgeRatio * symbol2EntryPrice;
-        const errorAdjustedTakeProfit = positionTakeProfit === undefined ? undefined : (regressionSlope * symbol2EntryPrice + positionTakeProfit) - statistics.hedgeRatio * symbol2EntryPrice;
+        const absoluteStopLoss = positionStopLoss === undefined ? undefined : entryResidual + positionStopLoss;
+        const absoluteTakeProfit = positionTakeProfit === undefined ? undefined : entryResidual + positionTakeProfit;
+        const amendedAbsoluteTakeProfit = position.amendedTakeProfit === undefined ? undefined : entryResidual + position.amendedTakeProfit;
+        const amendedAbsoluteStopLoss = position.amendedStopLoss === undefined ? undefined : entryResidual + position.amendedStopLoss;
 
         this.renderPositionLine(ctx, mediaSize, position, position.closeObject, entryResidual);
 
-        if(errorAdjustedTakeProfit !== undefined && position.takeProfitMoveObject && position.takeProfitCloseObject)
-            this.renderOrderLine(ctx, mediaSize, "take_profit", position, position.amendedTakeProfit ?? errorAdjustedTakeProfit, position.takeProfitMoveObject, position.takeProfitCloseObject);
-        if(errorAdjustedStopLoss !== undefined && position.stopLossMoveObject && position.stopLossCloseObject)
-            this.renderOrderLine(ctx, mediaSize, "stop_loss", position, position.amendedStopLoss ?? errorAdjustedStopLoss, position.stopLossMoveObject, position.stopLossCloseObject);
+        if(absoluteTakeProfit !== undefined && position.takeProfitMoveObject && position.takeProfitCloseObject)
+            this.renderOrderLine(ctx, mediaSize, "take_profit", position, amendedAbsoluteTakeProfit ?? absoluteTakeProfit, position.takeProfitMoveObject, position.takeProfitCloseObject);
+        if(absoluteStopLoss !== undefined && position.stopLossMoveObject && position.stopLossCloseObject)
+            this.renderOrderLine(ctx, mediaSize, "stop_loss", position, amendedAbsoluteStopLoss ?? absoluteStopLoss, position.stopLossMoveObject, position.stopLossCloseObject);
 
-        const takeProfit = position.amendedTakeProfit ?? (errorAdjustedTakeProfit === undefined ? undefined : errorAdjustedTakeProfit);
-        const stopLoss = position.amendedStopLoss ?? (errorAdjustedStopLoss === undefined ? undefined : errorAdjustedStopLoss);
+        const takeProfit = amendedAbsoluteTakeProfit ?? (absoluteTakeProfit === undefined ? undefined : absoluteTakeProfit);
+        const stopLoss = amendedAbsoluteStopLoss ?? (absoluteStopLoss === undefined ? undefined : absoluteStopLoss);
 
         if(!position.focused)
             return;
